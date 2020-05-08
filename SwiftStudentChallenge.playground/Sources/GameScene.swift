@@ -17,18 +17,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
     var score = NSInteger()
     
     // key: hazy
-    let hazyAction: SKAction = SKAction.repeatForever(
-        .sequence([
-//            .fadeIn(withDuration: 0.5),
-            .fadeAlpha(to: 1.0, duration: 0.5),
-            .wait(forDuration: 0.5, withRange: 0.3),
-//            .fadeOut(withDuration: 0.5),
-            .fadeAlpha(to: 0.0, duration: 0.5),
-            .wait(forDuration: 0.5, withRange: 0.3),
-        ])
-    )
     
-    
+    public var hazyAction: SKAction!
+    /*
+    = Actions(running: .sequentially) {
+        Fade(.in, duration: 0.5)
+        Wait(forRandomDurationIn: 0.2 ... 0.8)
+        Fade(.out, duration: 0.5)
+        Wait(forRandomDurationIn: 0.2 ... 0.8)
+    }
+    .repeatForever()
+    .skAction
+     */
+ 
     let birdCategory: UInt32 = 1 << 0
     let worldCategory: UInt32 = 1 << 1
     let pipeCategory: UInt32 = 1 << 2
@@ -62,9 +63,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
         
         groundTexture.filteringMode = .nearest // shorter form for SKTextureFilteringMode.Nearest
         
-        let moveGroundSprite = SKAction.moveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
-        let resetGroundSprite = SKAction.moveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
-        let moveGroundSpritesForever = SKAction.repeatForever(SKAction.sequence([moveGroundSprite,resetGroundSprite]))
+//        let moveGroundSprite = SKAction.moveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
+//        let resetGroundSprite = SKAction.moveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
+//        let moveGroundSpritesForever = SKAction.repeatForever(SKAction.sequence([moveGroundSprite,resetGroundSprite]))
+        
+        let moveGroundSpritesForever = Actions(running: .sequentially) {
+            MoveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
+            MoveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
+        }.repeatForever()
         
         for i in 0 ..< 2 + Int(self.frame.size.width / ( groundTexture.size().width * 2 )) {
             let i = CGFloat(i)
@@ -287,11 +293,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
     }
 }
 
-public func show() {
+public func show(birdAction: Action? = nil) {
     let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
     if let scene = GameScene(fileNamed: "GameScene") {
         scene.scaleMode = .aspectFill
         sceneView.ignoresSiblingOrder = true
+        
+        birdAction.map { action in
+            scene.hazyAction = action.skAction
+        }
+        
+        // values of scene should be set up before presenting the scene
         sceneView.presentScene(scene)
     }
     PlaygroundSupport.PlaygroundPage.current.setLiveView(sceneView)
