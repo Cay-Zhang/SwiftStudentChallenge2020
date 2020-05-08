@@ -1,7 +1,9 @@
 //: [Previous](@previous)
 
 import Foundation
+import SpriteKit
+import PlaygroundSupport
 
-var str = "Hello, playground"
+show()
 
 //: [Next](@next)
