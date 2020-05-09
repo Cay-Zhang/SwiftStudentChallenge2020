@@ -1,10 +1,6 @@
 //: [Previous](@previous)
 
-import Foundation
-import SpriteKit
-import PlaygroundSupport
-import SwiftUI
-
+//#-editable-code
 let birdAction = Actions(running: .sequentially) {
     Fade(.out, duration: 0.1)
     Wait(forDuration: 0.1)
@@ -20,6 +16,22 @@ let birdAction2 = Actions(running: .sequentially) {
     Wait(forDuration: 2)
 }.repeatForever()
 
-show(birdAction: birdAction2)
+let game = Game().showDebugStatistics()
+game.show()
+//#-end-editable-code
+
+//#-hidden-code
+import Foundation
+import SpriteKit
+import PlaygroundSupport
+import SwiftUI
+//#-end-hidden-code
+
+/*:
+    Roses are `UIColor.red`,
+    Violets are 🔵,
+    Swift Playgrounds are rad,
+    and so are you!
+ */
 
 //: [Next](@next)

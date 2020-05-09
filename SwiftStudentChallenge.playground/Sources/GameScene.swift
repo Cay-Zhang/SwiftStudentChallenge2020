@@ -2,7 +2,7 @@ import Foundation
 import SpriteKit
 import PlaygroundSupport
 
-public class GameScene: SKScene, SKPhysicsContactDelegate{
+class GameScene: SKScene, SKPhysicsContactDelegate{
     let verticalPipeGap = 150.0
     
     var bird:SKSpriteNode!
@@ -16,19 +16,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
     var scoreLabelNode:SKLabelNode!
     var score = NSInteger()
     
-    // key: hazy
+    // key: bird
     
-    public var hazyAction: SKAction!
-    /*
-    = Actions(running: .sequentially) {
-        Fade(.in, duration: 0.5)
-        Wait(forRandomDurationIn: 0.2 ... 0.8)
-        Fade(.out, duration: 0.5)
-        Wait(forRandomDurationIn: 0.2 ... 0.8)
-    }
-    .repeatForever()
-    .skAction
-     */
+    var birdAction: SKAction?
  
     let birdCategory: UInt32 = 1 << 0
     let worldCategory: UInt32 = 1 << 1
@@ -133,8 +123,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y:self.frame.size.height * 0.6)
         bird.run(flap)
         
-        // hazy mode!
-        bird.run(hazyAction, withKey: "hazy")
+        bird.run(birdAction, withKey: "bird")
         
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
         bird.physicsBody?.isDynamic = true
@@ -214,8 +203,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
         bird.speed = 1.0
         bird.zRotation = 0.0
         
-        bird.removeAction(forKey: "hazy")
-        bird.run(hazyAction, withKey: "hazy")
+        bird.removeAction(forKey: "bird")
+        bird.run(birdAction, withKey: "bird")
         
         // Remove all existing pipes
         pipes.removeAllChildren()
@@ -291,20 +280,4 @@ public class GameScene: SKScene, SKPhysicsContactDelegate{
             }
         }
     }
-}
-
-public func show(birdAction: Action? = nil) {
-    let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
-    if let scene = GameScene(fileNamed: "GameScene") {
-        scene.scaleMode = .aspectFill
-        sceneView.ignoresSiblingOrder = true
-        
-        birdAction.map { action in
-            scene.hazyAction = action.skAction
-        }
-        
-        // values of scene should be set up before presenting the scene
-        sceneView.presentScene(scene)
-    }
-    PlaygroundSupport.PlaygroundPage.current.setLiveView(sceneView)
 }

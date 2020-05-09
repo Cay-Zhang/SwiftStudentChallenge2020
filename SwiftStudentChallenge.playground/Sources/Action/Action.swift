@@ -83,7 +83,7 @@ public struct Actions: Action {
     let actions: [Action]
     let executionMode: ExecutionMode
     
-    public init(running executionMode: ExecutionMode, _ actions: [Action]) {
+    public init(running executionMode: ExecutionMode = .sequentially, _ actions: [Action]) {
         self.executionMode = executionMode
         self.actions = actions
     }
@@ -117,5 +117,17 @@ public struct RepeatForever: Action {
 public extension SKNode {
     func run(_ action: Action, completion block: @escaping () -> Void = { }) {
         run(action.skAction, completion: block)
+    }
+    
+    func run(_ action: SKAction?, completion block: @escaping () -> Void = { }) {
+        if let action = action {
+            run(action, completion: block)
+        }
+    }
+    
+    func run(_ action: SKAction?, withKey key: String) {
+        if let action = action {
+            run(action, withKey: key)
+        }
     }
 }
