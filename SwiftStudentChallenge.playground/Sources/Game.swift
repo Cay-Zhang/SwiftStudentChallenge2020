@@ -4,6 +4,8 @@ import Combine
 
 public struct Game {
     
+    let _sceneView: SKView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
+    
     let birdAction: Action?
     var isDebugStatisticsShown = false
     
@@ -26,39 +28,35 @@ public struct Game {
 
 extension Game {
     
-    func setup(gameScene: GameScene) {
-        gameScene.birdAction = birdAction?.skAction
+    func setup(levelScene: LevelScene) {
+        levelScene.birdAction = birdAction?.skAction
     }
     
-    public func show() {
-        let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
-        sceneView.ignoresSiblingOrder = true
+    func setupSceneView() {
+        _sceneView.ignoresSiblingOrder = true
         if self.isDebugStatisticsShown {
-            sceneView.showsFPS = true
-            sceneView.showsNodeCount = true
+            _sceneView.showsFPS = true
+            _sceneView.showsNodeCount = true
         }
-        if let scene = GameScene(fileNamed: "GameScene") {
-            scene.scaleMode = .aspectFill
-            setup(gameScene: scene)
-            // values of scene should be set up before presenting the scene
-            sceneView.presentScene(scene)
-        }
-        PlaygroundSupport.PlaygroundPage.current.setLiveView(sceneView)
     }
+    
 }
 
 public extension Game {
-    mutating func runLevels() {
+    func runLevels() {
+        
+        setupSceneView()
         
         levelSubject
             .print()
-            .sink { [levels, weak levelSubject, weak cancelBag] value in
-                guard let levelSubject = levelSubject, let cancelBag = cancelBag else { return }
+            .sink { [levels, weak levelSubject, weak cancelBag, weak _sceneView] value in
+                guard let levelSubject = levelSubject, let cancelBag = cancelBag, let sceneView = _sceneView else { return }
                 let (index, result) = value
                 print(levels[index].name)
                 if (index + 1) < levels.endIndex {
+                    sceneView.scene?.removeAllActions()
                     levels[index + 1]
-                        .run()
+                        .run(in: self)
                         .sink { [index, weak levelSubject] value in
                             levelSubject?.send((index + 1, value))
                         }
@@ -67,14 +65,16 @@ public extension Game {
                     levelSubject.send(completion: .finished)
                 }
             }
-            .store(in: cancelBag) //
+            .store(in: cancelBag)
         
         
-        levels.first!.run()
+        levels.first!.run(in: self)
             .sink { [levelSubject] value in
                 levelSubject.send((0, value))
             }
-            .store(in: cancelBag) //
+            .store(in: cancelBag)
+        
+        
         
     }
     

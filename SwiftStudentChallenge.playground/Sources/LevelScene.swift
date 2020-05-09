@@ -2,7 +2,7 @@ import Foundation
 import SpriteKit
 import PlaygroundSupport
 
-class GameScene: SKScene, SKPhysicsContactDelegate{
+class LevelScene: SKScene, SKPhysicsContactDelegate{
     let verticalPipeGap = 150.0
     
     var bird:SKSpriteNode!
@@ -17,13 +17,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     var score = NSInteger()
     
     // key: bird
-    
     var birdAction: SKAction?
  
     let birdCategory: UInt32 = 1 << 0
     let worldCategory: UInt32 = 1 << 1
     let pipeCategory: UInt32 = 1 << 2
     let scoreCategory: UInt32 = 1 << 3
+    
+    var finish: (Result<Level.Result, Never>) -> Void = { _ in
+        print("finish promise isn't assigned.")
+    }
+    
     
     public override func didMove(to view: SKView) {
         
@@ -277,7 +281,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
 //                }
                 
                 
+                finish(.success(true))
+                
             }
         }
     }
+    
+    
+    
+    deinit {
+        print("LevelScene: deinit")
+    }
+    
+    
 }
