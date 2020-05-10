@@ -10,19 +10,28 @@ let birdAction = Actions(running: .sequentially) {
 }.repeatForever()
 
 let birdAction2 = Actions(running: .sequentially) {
-    MoveBy(x: 200, duration: 1.0)
-    Wait(forDuration: 2)
-    MoveBy(x: -100, duration: 1.0)
-    Wait(forDuration: 2)
+    Wait(forRandomDurationIn: 1 ... 2)
+    Colorize(#colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1), duration: 0.2, colorBlendFactor: 0.7)
+    Decolorize(duration: 0.2)
+    Colorize(#colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1), duration: 0.2, colorBlendFactor: 0.4)
+    MoveBy(x: 200, duration: 5.0)
+    Decolorize(duration: 0.2)
+    Wait(forRandomDurationIn: 1 ... 2)
+    Colorize(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1), duration: 0.2, colorBlendFactor: 0.7)
+    Decolorize(duration: 0.2)
+    Colorize(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1), duration: 0.2, colorBlendFactor: 0.4)
+    MoveBy(x: -200, duration: 5.0)
+    Decolorize(duration: 0.2)
 }.repeatForever()
 
 let game = Game()
     .showDebugStatistics()
-    .appendingLevel(Level(name: "Hazy", birdAction: birdAction))
     .appendingLevel(
         Level(name: "Wind", birdAction: birdAction2)
-            .skyColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
+            .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
     )
+    .appendingLevel(Level(name: "Hazy", birdAction: birdAction))
+    
 game.runLevels()
 //#-end-editable-code
 

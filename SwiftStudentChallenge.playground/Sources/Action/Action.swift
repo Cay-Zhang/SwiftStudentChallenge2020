@@ -116,6 +116,34 @@ public struct Fade: Action {
     }
 }
 
+public struct Decolorize: Action {
+    let duration: TimeInterval
+    
+    public init(duration: TimeInterval) {
+        self.duration = duration
+    }
+    
+    public var skAction: SKAction {
+        .colorize(withColorBlendFactor: 0.0, duration: duration)
+    }
+}
+
+public struct Colorize: Action {
+    let color: UIColor
+    let duration: TimeInterval
+    let colorBlendFactor: CGFloat
+    
+    public init(_ color: UIColor, duration: TimeInterval, colorBlendFactor: CGFloat = 0.5) {
+        self.color = color
+        self.duration = duration
+        self.colorBlendFactor = colorBlendFactor
+    }
+    
+    public var skAction: SKAction {
+        .colorize(with: color, colorBlendFactor: colorBlendFactor, duration: duration)
+    }
+}
+
 public struct Wait: Action {
     let durationRange: ClosedRange<TimeInterval>
     
