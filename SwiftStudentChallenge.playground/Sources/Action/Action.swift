@@ -1,13 +1,50 @@
 import SpriteKit
+import SwiftUI
 
 public protocol Action {
     var skAction: SKAction { get }
     func repeatForever() -> RepeatForever
+    func then(_ action: Action) -> Action
+    func thenRemove() -> Action
+    func cached() -> Action
+    func `repeat`(_ count: Int) -> Action
+    func run(on node: SKNode) -> Void
+    func run(on node: SKNode, withKey key: String) -> Void
 }
 
 public extension Action {
     func repeatForever() -> RepeatForever {
         RepeatForever(self)
+    }
+    
+    func then(_ action: Action) -> Action {
+        Actions(running: .sequentially) {
+            self
+            action
+        }
+    }
+    
+    func thenRemove() -> Action {
+        Actions(running: .sequentially) {
+            self
+            Remove()
+        }
+    }
+    
+    func cached() -> Action {
+        CachedAction(self)
+    }
+    
+    func `repeat`(_ count: Int) -> Action {
+        Repeat(count, action: self)
+    }
+    
+    func run(on node: SKNode) -> Void {
+        node.run(self)
+    }
+    
+    func run(on node: SKNode, withKey key: String) -> Void {
+        node.run(self, withKey: key)
     }
 }
 
@@ -24,6 +61,34 @@ public struct MoveBy: Action {
     
     public var skAction: SKAction {
         SKAction.moveBy(x: deltaX, y: deltaY, duration: duration)
+    }
+}
+
+public struct Rotate: Action {
+    let angle: Angle
+    let duration: TimeInterval
+    
+    public init(by angle: Angle, duration: TimeInterval) {
+        self.angle = angle
+        self.duration = duration
+    }
+    
+    public var skAction: SKAction {
+        .rotate(byAngle: CGFloat(angle.radians), duration: duration)
+    }
+}
+
+public struct Scale: Action {
+    let scale: CGFloat
+    let duration: TimeInterval
+    
+    public init(to scale: CGFloat, duration: TimeInterval) {
+        self.scale = scale
+        self.duration = duration
+    }
+    
+    public var skAction: SKAction {
+        .scale(to: scale, duration: duration)
     }
 }
 
@@ -80,7 +145,7 @@ public struct Actions: Action {
         case sequentially, parallelly
     }
     
-    let actions: [Action]
+    var actions: [Action]
     let executionMode: ExecutionMode
     
     public init(running executionMode: ExecutionMode = .sequentially, _ actions: [Action]) {
@@ -101,6 +166,56 @@ public struct Actions: Action {
             return SKAction.group(actions.map { $0.skAction })
         }
     }
+    
+    public func thenRemove() -> Action {
+        if executionMode == .sequentially {
+            if actions.last is Remove {
+                return self
+            } else {
+                var copy = self
+                copy.actions.append(Remove())
+                return copy
+            }
+        } else {
+            return Actions(running: .sequentially) {
+                self
+                Remove()
+            }
+        }
+    }
+    
+    public func then(_ action: Action) -> Action {
+        if executionMode == .sequentially {
+            var copy = self
+            copy.actions.append(action)
+            return copy
+        } else {
+            return Actions(running: .sequentially) {
+                self
+                action
+            }
+        }
+    }
+}
+
+public struct Repeat: Action {
+    var count: Int
+    let action: Action
+    
+    init(_ count: Int, action: Action) {
+        self.count = count
+        self.action = action
+    }
+    
+    public var skAction: SKAction {
+        .repeat(action.skAction, count: count)
+    }
+    
+    public func `repeat`(_ count: Int) -> Action {
+        var copy = self
+        copy.count *= count
+        return copy
+    }
 }
 
 public struct RepeatForever: Action {
@@ -112,9 +227,30 @@ public struct RepeatForever: Action {
         SKAction.repeatForever(action.skAction)
     }
     public func repeatForever() -> RepeatForever { self }
+    public func `repeat`(_ count: Int) -> Action { self }
+    public func then(_ action: Action) -> Action { fatalError("Appending an action after RepeatForever.") }
 }
 
-public extension SKNode {
+public struct Remove: Action {
+    public init() { }
+    public var skAction: SKAction {
+        SKAction.removeFromParent()
+    }
+    public func thenRemove() -> Action { self }
+}
+
+public struct CachedAction: Action {
+    public var skAction: SKAction
+    public init(_ action: Action) {
+        self.skAction = action.skAction
+    }
+    public init(_ action: SKAction) {
+        self.skAction = action
+    }
+    public func cached() -> Action { self }
+}
+
+extension SKNode {
     func run(_ action: Action, completion block: @escaping () -> Void = { }) {
         run(action.skAction, completion: block)
     }
@@ -130,4 +266,14 @@ public extension SKNode {
             run(action, withKey: key)
         }
     }
+    
+    func run(_ action: Action?, withKey key: String) {
+        if let action = action {
+            run(action.skAction, withKey: key)
+        }
+    }
+}
+
+extension SKAction: Action {
+    public var skAction: SKAction { self }
 }

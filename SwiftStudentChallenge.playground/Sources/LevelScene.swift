@@ -6,10 +6,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
     let verticalPipeGap = 150.0
     
     var bird:SKSpriteNode!
-    var skyColor:SKColor!
+    var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
     var pipeTextureUp:SKTexture!
     var pipeTextureDown:SKTexture!
-    var movePipesAndRemove:SKAction!
+    var movePipesAndRemove: Action!
     var moving:SKNode!
     var pipes:SKNode!
     var canRestart = Bool()
@@ -17,7 +17,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
     var score = NSInteger()
     
     // key: bird
-    var birdAction: SKAction?
+    var birdAction: Action?
  
     let birdCategory: UInt32 = 1 << 0
     let worldCategory: UInt32 = 1 << 1
@@ -28,7 +28,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         print("finish promise isn't assigned.")
     }
     
-    
     public override func didMove(to view: SKView) {
         
         canRestart = true
@@ -38,7 +37,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         self.physicsWorld.contactDelegate = self
         
         // setup background color
-        skyColor = SKColor(red: 81.0/255.0, green: 192.0/255.0, blue: 201.0/255.0, alpha: 1.0)
         self.backgroundColor = skyColor
         
         moving = SKNode()
@@ -50,10 +48,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         let groundTexture = SKTexture(image: #imageLiteral(resourceName: "land.png"))
         
         groundTexture.filteringMode = .nearest // shorter form for SKTextureFilteringMode.Nearest
-        
-//        let moveGroundSprite = SKAction.moveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
-//        let resetGroundSprite = SKAction.moveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
-//        let moveGroundSpritesForever = SKAction.repeatForever(SKAction.sequence([moveGroundSprite,resetGroundSprite]))
         
         let moveGroundSpritesForever = Actions(running: .sequentially) {
             MoveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
@@ -72,11 +66,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         // skyline
         let skyTexture = SKTexture(image: #imageLiteral(resourceName: "sky.png"))
         
-//        skyTexture.filteringMode = .nearest
+        skyTexture.filteringMode = .nearest
         
-        let moveSkySprite = SKAction.moveBy(x: -skyTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.1 * skyTexture.size().width * 2.0))
-        let resetSkySprite = SKAction.moveBy(x: skyTexture.size().width * 2.0, y: 0, duration: 0.0)
-        let moveSkySpritesForever = SKAction.repeatForever(SKAction.sequence([moveSkySprite,resetSkySprite]))
+        let moveSkySpritesForever =
+            MoveBy(x: -skyTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.1 * skyTexture.size().width * 2.0))
+                .then(MoveBy(x: skyTexture.size().width * 2.0, y: 0, duration: 0.0))
+                .repeatForever()
         
         for i in 0 ..< 2 + Int(self.frame.size.width / ( skyTexture.size().width * 2 )) {
             let i = CGFloat(i)
@@ -96,9 +91,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         // create the pipes movement actions
         let distanceToMove = CGFloat(self.frame.size.width + 2.0 * pipeTextureUp.size().width)
-        let movePipes = SKAction.moveBy(x: -distanceToMove, y:0.0, duration:TimeInterval(0.005 * distanceToMove))
-        let removePipes = SKAction.removeFromParent()
-        movePipesAndRemove = SKAction.sequence([movePipes, removePipes])
+        movePipesAndRemove =
+            MoveBy(x: -distanceToMove, y: 0.0, duration: TimeInterval(0.005 * distanceToMove))
+                .thenRemove()
+                .cached()
         
         // spawn the pipes
         let spawn = SKAction.run { [weak self] in
@@ -205,7 +201,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.speed = 1.0
         bird.zRotation = 0.0
         
-        bird.removeAction(forKey: "bird")
         bird.run(birdAction, withKey: "bird")
         
         // Remove all existing pipes
@@ -248,28 +243,42 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 scoreLabelNode.text = String(score)
                 
                 // Add a little visual feedback for the score increment
-                scoreLabelNode.run(SKAction.sequence([SKAction.scale(to: 1.5, duration:TimeInterval(0.1)), SKAction.scale(to: 1.0, duration:TimeInterval(0.1))]))
+                Actions(running: .sequentially) {
+                    Scale(to: 1.5, duration: 0.1)
+                    Scale(to: 1.0, duration: 0.1)
+                }.run(on: scoreLabelNode)
             } else {
                 
                 moving.speed = 0
                 
                 bird.physicsBody?.collisionBitMask = worldCategory
-                bird.run(SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1), completion: { [weak self] in
+//                bird.run(SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1), completion: { [weak self] in
+//                    self?.bird.speed = 0
+//                })
+                bird.run(Rotate(by: .degrees(Double(bird.position.y) * 2), duration: 1)) { [weak self] in
                     self?.bird.speed = 0
-                })
-                
+                }
                 
                 // Flash background if contact is detected
-//                self.removeAction(forKey: "flash")
-//                self.run(SKAction.sequence([SKAction.repeat(SKAction.sequence([SKAction.run({
-//                    self.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
-//                    }),SKAction.wait(forDuration: TimeInterval(0.05)), SKAction.run({
-//                        self.backgroundColor = self.skyColor
-//                        }), SKAction.wait(forDuration: TimeInterval(0.05))]), count:4), SKAction.run({
-//                            self.canRestart = true
-//                            })]), withKey: "flash")
+                Actions(running: .sequentially) {
+                    Actions(running: .sequentially) {
+                        SKAction.run { [weak self] in
+                            self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
+                        }
+                        Wait(forDuration: 0.05)
+                        SKAction.run { [weak self, skyColor = self.skyColor ?? SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)] in
+                            self?.backgroundColor = skyColor
+                        }
+                        Wait(forDuration: 0.05)
+                    }.repeat(4)
+                    
+                    SKAction.run { [weak self] in
+                        self?.canRestart = true
+                    }
+                }.run(on: self, withKey: "flash")
+                
 //                contact.bodyA.applyAngularImpulse(100)
-//                contact.bodyB.node!
+                
 //                if let node = contact.bodyA.node as? SKSpriteNode {
 //                    print(node)
 //                    let pulsedRed = SKAction.sequence([

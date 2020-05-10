@@ -74,10 +74,10 @@ public extension Game {
         
         
         firstLevel.run(in: _sceneView)
-        .sink { [weak levelSubject] value in
-            levelSubject?.send((0, value))
-        }
-        .store(in: cancelBag)
+            .sink { [weak levelSubject] value in
+                levelSubject?.send((0, value))
+            }
+            .store(in: cancelBag)
 
         
         

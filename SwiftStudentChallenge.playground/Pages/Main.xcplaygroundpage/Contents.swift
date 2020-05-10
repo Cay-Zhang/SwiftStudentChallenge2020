@@ -18,8 +18,11 @@ let birdAction2 = Actions(running: .sequentially) {
 
 let game = Game()
     .showDebugStatistics()
-    .appendingLevel(Level(name: "Haha", birdAction: birdAction))
-    .appendingLevel(Level(name: "HeyHey", birdAction: birdAction2))
+    .appendingLevel(Level(name: "Hazy", birdAction: birdAction))
+    .appendingLevel(
+        Level(name: "Wind", birdAction: birdAction2)
+            .skyColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
+    )
 game.runLevels()
 //#-end-editable-code
 

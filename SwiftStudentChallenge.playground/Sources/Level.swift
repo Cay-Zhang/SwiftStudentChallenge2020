@@ -12,6 +12,7 @@ public struct Level {
     }
     
     public var name = "Level"
+    public var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
     
     var birdAction: Action?
     
@@ -22,8 +23,9 @@ public struct Level {
                 scene.finish = promise
                 
                 // Setup Level Scene
-                scene.birdAction = self.birdAction?.skAction
+                scene.birdAction = self.birdAction
                 scene.levelName = self.name
+                scene.skyColor = self.skyColor
                 
                 // values of scene should be set up before presenting the scene
                 view.presentScene(scene)
@@ -34,4 +36,16 @@ public struct Level {
         }
     }
     
+    public func skyColor(_ color: UIColor) -> Level {
+        modifying(\.skyColor, color)
+    }
+    
+}
+
+extension Level {
+    func modifying<T>(_ keyPath: WritableKeyPath<Level, T>, _ value: T) -> Level {
+        var copy = self
+        copy[keyPath: keyPath] = value
+        return copy
+    }
 }
