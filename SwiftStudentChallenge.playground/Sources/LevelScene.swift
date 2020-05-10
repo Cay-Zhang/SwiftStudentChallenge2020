@@ -257,7 +257,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 moving.speed = 0
                 
                 bird.physicsBody?.collisionBitMask = worldCategory
-                bird.run(  SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1), completion:{self.bird.speed = 0 })
+                bird.run(SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1), completion: { [weak self] in
+                    self?.bird.speed = 0
+                })
                 
                 
                 // Flash background if contact is detected
@@ -284,12 +286,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 
                 
                 finish(.success(true))
-                finish = { _ in }
             }
         }
     }
     
-    
+    override func willMove(from view: SKView) {
+        super.willMove(from: view)
+        // uncomment to debug memory issues
+//        for child in children {
+//            child.removeAllActions()
+//            child.removeFromParent()
+//        }
+//        self.removeAllActions()
+    }
     
     deinit {
         print("LevelScene: deinit")

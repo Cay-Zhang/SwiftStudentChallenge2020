@@ -53,18 +53,8 @@ public extension Game {
                 guard let levelSubject = levelSubject, let cancelBag = cancelBag, let sceneView = _sceneView else { return }
                 let (index, result) = value
                 if (index + 1) < levels.endIndex {
-                    
-                    // 10 references before removing actions
-                    print(CFGetRetainCount(sceneView.scene))
-                    sceneView.scene?.removeAllActions()
-                    print(CFGetRetainCount(sceneView.scene))
-                    //  6 references after removing actions
-                    
-                    
-                    
-                    
                     levels[index + 1]
-                        .run(in: self)
+                        .run(in: sceneView)
                         .sink { [index, weak levelSubject] value in
                             levelSubject?.send((index + 1, value))
                         }
@@ -76,9 +66,9 @@ public extension Game {
             .store(in: cancelBag)
         
         
-        levels.first!.run(in: self)
-            .sink { [levelSubject] value in
-                levelSubject.send((0, value))
+        levels.first!.run(in: _sceneView)
+            .sink { [weak levelSubject] value in
+                levelSubject?.send((0, value))
             }
             .store(in: cancelBag)
         

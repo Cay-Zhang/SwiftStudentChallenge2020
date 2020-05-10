@@ -11,14 +11,14 @@ public struct Level {
     }
     public var name = ""
     
-    public func run(in game: Game) -> Future<Level.Result, Never> {
+    public func run(in view: SKView) -> Future<Level.Result, Never> {
         Future { promise in
             if let scene = LevelScene(fileNamed: "LevelScene") {
                 scene.scaleMode = .aspectFill
                 scene.finish = promise
                 // values of scene should be set up before presenting the scene
-                game._sceneView.presentScene(scene)
-                PlaygroundSupport.PlaygroundPage.current.setLiveView(game._sceneView)
+                view.presentScene(scene)
+                PlaygroundSupport.PlaygroundPage.current.setLiveView(view)
             } else {
                 fatalError()
             }
