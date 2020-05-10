@@ -107,7 +107,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         movePipesAndRemove = SKAction.sequence([movePipes, removePipes])
         
         // spawn the pipes
-        let spawn = SKAction.run(spawnPipes)
+        let spawn = SKAction.run { [weak self] in
+            self?.spawnPipes()
+        }
         let delay = SKAction.wait(forDuration: TimeInterval(1.0))
         let spawnThenDelay = SKAction.sequence([spawn, delay])
         let spawnThenDelayForever = SKAction.repeatForever(spawnThenDelay)
@@ -259,14 +261,14 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 
                 
                 // Flash background if contact is detected
-                self.removeAction(forKey: "flash")
-                self.run(SKAction.sequence([SKAction.repeat(SKAction.sequence([SKAction.run({
-                    self.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
-                    }),SKAction.wait(forDuration: TimeInterval(0.05)), SKAction.run({
-                        self.backgroundColor = self.skyColor
-                        }), SKAction.wait(forDuration: TimeInterval(0.05))]), count:4), SKAction.run({
-                            self.canRestart = true
-                            })]), withKey: "flash")
+//                self.removeAction(forKey: "flash")
+//                self.run(SKAction.sequence([SKAction.repeat(SKAction.sequence([SKAction.run({
+//                    self.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
+//                    }),SKAction.wait(forDuration: TimeInterval(0.05)), SKAction.run({
+//                        self.backgroundColor = self.skyColor
+//                        }), SKAction.wait(forDuration: TimeInterval(0.05))]), count:4), SKAction.run({
+//                            self.canRestart = true
+//                            })]), withKey: "flash")
 //                contact.bodyA.applyAngularImpulse(100)
 //                contact.bodyB.node!
 //                if let node = contact.bodyA.node as? SKSpriteNode {
@@ -282,7 +284,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 
                 
                 finish(.success(true))
-                
+                finish = { _ in }
             }
         }
     }
