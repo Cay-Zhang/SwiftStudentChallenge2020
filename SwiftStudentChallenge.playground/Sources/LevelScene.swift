@@ -252,9 +252,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 moving.speed = 0
                 
                 bird.physicsBody?.collisionBitMask = worldCategory
-//                bird.run(SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1), completion: { [weak self] in
-//                    self?.bird.speed = 0
-//                })
                 bird.run(Rotate(by: .degrees(Double(bird.position.y) * 2), duration: 1)) { [weak self] in
                     self?.bird.speed = 0
                 }
@@ -266,7 +263,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                             self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
                         }
                         Wait(forDuration: 0.05)
-                        SKAction.run { [weak self, skyColor = self.skyColor ?? SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)] in
+                        SKAction.run { [weak self, skyColor = self.skyColor] in
                             self?.backgroundColor = skyColor
                         }
                         Wait(forDuration: 0.05)

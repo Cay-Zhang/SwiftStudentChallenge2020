@@ -1,5 +1,3 @@
-//: [Previous](@previous)
-
 //#-editable-code
 let birdAction = Actions(running: .sequentially) {
     Fade(.out, duration: 0.1)
