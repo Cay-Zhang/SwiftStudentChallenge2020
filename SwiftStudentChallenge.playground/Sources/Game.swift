@@ -4,7 +4,7 @@ import Combine
 
 public struct Game {
     
-    let _sceneView: SKView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
+    let _sceneView: SKView = SKView(frame: CGRect(x: 0 , y: 0, width: 768, height: 768))
     
     
     var isDebugStatisticsShown = false
