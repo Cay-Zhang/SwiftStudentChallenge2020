@@ -16,8 +16,11 @@ let birdAction2 = Actions(running: .sequentially) {
     Wait(forDuration: 2)
 }.repeatForever()
 
-let game = Game().showDebugStatistics()
-game.show()
+let game = Game()
+    .showDebugStatistics()
+    .appendingLevel(Level(name: "Haha", birdAction: birdAction))
+    .appendingLevel(Level(name: "HeyHey", birdAction: birdAction2))
+game.runLevels()
 //#-end-editable-code
 
 //#-hidden-code

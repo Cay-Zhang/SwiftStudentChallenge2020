@@ -6,16 +6,16 @@ public struct Game {
     
     let _sceneView: SKView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
     
-    let birdAction: Action?
+    
     var isDebugStatisticsShown = false
     
-    public var levels: [Level] = []
+    public var levels: [Level]
     let cancelBag = CancelBag()
     var levelSubject = PassthroughSubject<(Int, Bool), Never>()
     
     
-    public init(birdAction: Action? = nil) {
-        self.birdAction = birdAction
+    public init(levels: [Level] = []) {
+        self.levels = levels
     }
     
     public func showDebugStatistics() -> Game {
@@ -24,13 +24,15 @@ public struct Game {
         return copy
     }
     
+    public func appendingLevel(_ level: Level) -> Game {
+        var copy = self
+        copy.levels.append(level)
+        return copy
+    }
+    
 }
 
 extension Game {
-    
-    func setup(levelScene: LevelScene) {
-        levelScene.birdAction = birdAction?.skAction
-    }
     
     func setupSceneView() {
         _sceneView.ignoresSiblingOrder = true
@@ -44,6 +46,11 @@ extension Game {
 
 public extension Game {
     func runLevels() {
+        
+        guard let firstLevel = levels.first else {
+            print("There's no level in this game.")
+            fatalError()
+        }
         
         setupSceneView()
         
@@ -66,11 +73,13 @@ public extension Game {
             .store(in: cancelBag)
         
         
-        levels.first!.run(in: _sceneView)
-            .sink { [weak levelSubject] value in
-                levelSubject?.send((0, value))
-            }
-            .store(in: cancelBag)
+        firstLevel.run(in: _sceneView)
+        .sink { [weak levelSubject] value in
+            levelSubject?.send((0, value))
+        }
+        .store(in: cancelBag)
+
+        
         
         
         
@@ -78,5 +87,3 @@ public extension Game {
     
     
 }
-
-public var sharedCancelBag = Set<AnyCancellable>()
