@@ -11,7 +11,7 @@ public struct Level {
         self.birdAction = birdAction
     }
     
-    public var name = ""
+    public var name = "Level"
     
     var birdAction: Action?
     
@@ -23,6 +23,7 @@ public struct Level {
                 
                 // Setup Level Scene
                 scene.birdAction = self.birdAction?.skAction
+                scene.levelName = self.name
                 
                 // values of scene should be set up before presenting the scene
                 view.presentScene(scene)

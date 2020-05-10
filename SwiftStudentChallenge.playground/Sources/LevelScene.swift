@@ -47,12 +47,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         moving.addChild(pipes)
         
         // ground
-
-//        let url = Bundle.main.url(forResource: "land", withExtension: "png")!
-//        let path = Bundle.main.path(forResource: "land", ofType: "png")!
-//        let image = UIImage(contentsOfFile: path)!
-//        let groundTexture = SKTexture(image: image)
-        
         let groundTexture = SKTexture(image: #imageLiteral(resourceName: "land.png"))
         
         groundTexture.filteringMode = .nearest // shorter form for SKTextureFilteringMode.Nearest
@@ -157,6 +151,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         scoreLabelNode.text = String(score)
         self.addChild(scoreLabelNode)
         
+        setupLevelNameLabel()
+        
     }
     
     func spawnPipes() {
@@ -225,6 +221,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         // Restart animation
         moving.speed = 1
     }
+    
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if moving.speed > 0  {
             for _ in touches { // do we need all touches?
@@ -298,6 +295,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
 //            child.removeFromParent()
 //        }
 //        self.removeAllActions()
+    }
+    
+    // MAKR: - Level Name
+    var levelName: String = "Level name not set."
+    var levelNameLabel: SKLabelNode!
+    
+    func setupLevelNameLabel() {
+        levelNameLabel = childNode(withName: "levelNameLabel") as? SKLabelNode
+        levelNameLabel.text = levelName
     }
     
     deinit {
