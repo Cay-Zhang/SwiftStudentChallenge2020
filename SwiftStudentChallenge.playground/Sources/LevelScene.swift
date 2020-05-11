@@ -3,7 +3,7 @@ import SpriteKit
 import PlaygroundSupport
 
 class LevelScene: SKScene, SKPhysicsContactDelegate{
-    let verticalPipeGap = 150.0
+    
     
     var bird:SKSpriteNode!
     var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
@@ -43,47 +43,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         moving = SKNode()
         self.addChild(moving)
         
+        setupGround()
+        
         setupPipes()
         
-        
-        // ground
-        let groundTexture = SKTexture(image: #imageLiteral(resourceName: "land.png"))
-        
-        groundTexture.filteringMode = .nearest // shorter form for SKTextureFilteringMode.Nearest
-        
-        let moveGroundSpritesForever = Actions(running: .sequentially) {
-            MoveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
-            MoveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
-        }.repeatForever()
-        
-        for i in 0 ..< 2 + Int(self.frame.size.width / ( groundTexture.size().width * 2 )) {
-            let i = CGFloat(i)
-            let sprite = SKSpriteNode(texture: groundTexture)
-            sprite.setScale(2.0)
-            sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0)
-            sprite.run(moveGroundSpritesForever)
-            moving.addChild(sprite)
-        }
-        
         // skyline
-        let skyTexture = SKTexture(image: #imageLiteral(resourceName: "sky.png"))
-        
-        skyTexture.filteringMode = .nearest
-        
-        let moveSkySpritesForever =
-            MoveBy(x: -skyTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.1 * skyTexture.size().width * 2.0))
-                .then(MoveBy(x: skyTexture.size().width * 2.0, y: 0, duration: 0.0))
-                .repeatForever()
-        
-        for i in 0 ..< 2 + Int(self.frame.size.width / ( skyTexture.size().width * 2 )) {
-            let i = CGFloat(i)
-            let sprite = SKSpriteNode(texture: skyTexture)
-            sprite.setScale(2.0)
-            sprite.zPosition = -20
-            sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0 + groundTexture.size().height * 2.0)
-            sprite.run(moveSkySpritesForever)
-            moving.addChild(sprite)
-        }
+        setupSky()
         
         
         // setup our bird
@@ -112,13 +77,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         self.addChild(bird)
         
-        // create the ground
-        let ground = SKNode()
-        ground.position = CGPoint(x: 0, y: groundTexture.size().height)
-        ground.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundTexture.size().height * 2.0))
-        ground.physicsBody?.isDynamic = false
-        ground.physicsBody?.categoryBitMask = worldCategory
-        self.addChild(ground)
+        
         
         // Initialize label and create a label which holds the score
         score = 0
@@ -137,6 +96,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
     var topPipeTexture: SKTexture!
     let pipeScale: CGFloat = 2.0
     var pipeWidth: CGFloat!
+    var verticalPipeGap = 150.0
     
     func setupPipes() {
         pipes = SKNode()
@@ -171,16 +131,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func spawnPipes() {
-        let pipePair = SKNode()
-        pipePair.position = CGPoint(x: self.size.width + pipeWidth / 2.0, y: 0)
-        pipePair.zPosition = -10
+        let pipeGapCenterY = groundHeight + CGFloat.random(in: heightAboveGround * 0.5 ... heightAboveGround * 0.7)
         
-        let height = UInt32(self.size.height / 4)
-        let bottomPipeCenterY = Double(arc4random_uniform(height) + height)
+        let pipePair = SKNode()
+        pipePair.position = CGPoint(x: self.size.width + pipeWidth / 2.0, y: pipeGapCenterY)
+        pipePair.zPosition = -10
         
         let topPipe = SKSpriteNode(texture: topPipeTexture)
         topPipe.setScale(pipeScale)
-        topPipe.position = CGPoint(x: 0.0, y: bottomPipeCenterY + Double(topPipe.size.height) + verticalPipeGap)
+        topPipe.position = CGPoint(x: 0.0, y: verticalPipeGap / 2.0 + Double(topPipe.size.height) / 2.0)
         
         topPipe.physicsBody = SKPhysicsBody(rectangleOf: topPipe.size)
         topPipe.physicsBody?.isDynamic = false
@@ -190,7 +149,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         let bottomPipe = SKSpriteNode(texture: bottomPipeTexture)
         bottomPipe.setScale(pipeScale)
-        bottomPipe.position = CGPoint(x: 0.0, y: bottomPipeCenterY)
+        bottomPipe.position = CGPoint(x: 0.0, y: -verticalPipeGap / 2.0 - Double(bottomPipe.size.height) / 2.0)
         
         bottomPipe.physicsBody = SKPhysicsBody(rectangleOf: bottomPipe.size)
         bottomPipe.physicsBody?.isDynamic = false
@@ -199,8 +158,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         pipePair.addChild(bottomPipe)
         
         let contactNode = SKNode()
-        contactNode.position = CGPoint(x: topPipe.size.width + bird.size.width / 2, y: self.frame.midY)
-        contactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize( width: bottomPipe.size.width, height: self.frame.size.height ))
+        contactNode.position = CGPoint(x: pipeWidth + bird.size.width / 2, y: 0.0)
+        contactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: pipeWidth, height: self.size.height))
         contactNode.physicsBody?.isDynamic = false
         contactNode.physicsBody?.categoryBitMask = scoreCategory
         contactNode.physicsBody?.contactTestBitMask = birdCategory
@@ -210,6 +169,63 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         pipes.addChild(pipePair)
         
     }
+    
+    // MARK: - Ground
+    var groundTexture: SKTexture = {
+        let texture = SKTexture(image: #imageLiteral(resourceName: "land.png"))
+        texture.filteringMode = .nearest
+        return texture
+    }()
+    lazy var groundHeight: CGFloat = self.groundTexture.size().height * 2.0  // ground is scaled to 2x
+    lazy var heightAboveGround: CGFloat = self.size.height - self.groundHeight
+    
+    func setupGround() {
+        let moveGroundSpritesForever = Actions(running: .sequentially) {
+            MoveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
+            MoveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
+        }.repeatForever()
+        
+        for i in 0 ..< 2 + Int(self.frame.size.width / ( groundTexture.size().width * 2 )) {
+            let i = CGFloat(i)
+            let sprite = SKSpriteNode(texture: groundTexture)
+            sprite.setScale(2.0)
+            sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0)
+            sprite.run(moveGroundSpritesForever)
+            moving.addChild(sprite)
+        }
+        
+        // create the ground
+        let ground = SKNode()
+        ground.position = CGPoint(x: 0, y: groundTexture.size().height)
+        ground.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundTexture.size().height * 2.0))
+        ground.physicsBody?.isDynamic = false
+        ground.physicsBody?.categoryBitMask = worldCategory
+        self.addChild(ground)
+    }
+    
+    // MARK: - Sky
+    func setupSky() {
+        let skyTexture = SKTexture(image: #imageLiteral(resourceName: "sky.png"))
+
+        skyTexture.filteringMode = .nearest
+
+        let moveSkySpritesForever =
+            MoveBy(x: -skyTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.1 * skyTexture.size().width * 2.0))
+                .then(MoveBy(x: skyTexture.size().width * 2.0, y: 0, duration: 0.0))
+                .repeatForever()
+
+        for i in 0 ..< 2 + Int(self.frame.size.width / ( skyTexture.size().width * 2 )) {
+            let i = CGFloat(i)
+            let sprite = SKSpriteNode(texture: skyTexture)
+            sprite.setScale(2.0)
+            sprite.zPosition = -20
+            sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0 + skyTexture.size().height * 2.0) //
+            sprite.run(moveSkySpritesForever)
+            moving.addChild(sprite)
+        }
+    }
+    
+    
     
     func resetScene (){
         // Move bird to original position and reset velocity
