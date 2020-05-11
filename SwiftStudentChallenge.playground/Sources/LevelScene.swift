@@ -7,11 +7,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     var bird:SKSpriteNode!
     var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
-    var pipeTextureUp:SKTexture!
-    var pipeTextureDown:SKTexture!
+    
     var movePipesAndRemove: Action!
     var moving:SKNode!
-    var pipes:SKNode!
+    var pipes: SKNode!
     var canRestart = Bool()
     var scoreLabelNode:SKLabelNode!
     var score = NSInteger()
@@ -28,6 +27,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         print("finish promise isn't assigned.")
     }
     
+    
+    
     public override func didMove(to view: SKView) {
         
         canRestart = true
@@ -41,8 +42,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         moving = SKNode()
         self.addChild(moving)
-        pipes = SKNode()
-        moving.addChild(pipes)
+        
+        setupPipes()
+        
         
         // ground
         let groundTexture = SKTexture(image: #imageLiteral(resourceName: "land.png"))
@@ -83,27 +85,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
             moving.addChild(sprite)
         }
         
-        // create the pipes textures
-        pipeTextureUp = SKTexture(image: #imageLiteral(resourceName: "PipeUp.png"))
-        pipeTextureUp.filteringMode = .nearest
-        pipeTextureDown = SKTexture(image: #imageLiteral(resourceName: "PipeDown.png"))
-        pipeTextureDown.filteringMode = .nearest
-        
-        // create the pipes movement actions
-        let distanceToMove = CGFloat(self.frame.size.width + 2.0 * pipeTextureUp.size().width)
-        movePipesAndRemove =
-            MoveBy(x: -distanceToMove, y: 0.0, duration: TimeInterval(0.005 * distanceToMove))
-                .thenRemove()
-                .cached()
-        
-        // spawn the pipes
-        let spawn = SKAction.run { [weak self] in
-            self?.spawnPipes()
-        }
-        let delay = SKAction.wait(forDuration: TimeInterval(1.0))
-        let spawnThenDelay = SKAction.sequence([spawn, delay])
-        let spawnThenDelayForever = SKAction.repeatForever(spawnThenDelay)
-        self.run(spawnThenDelayForever)
         
         // setup our bird
         let birdTexture1 = SKTexture(image: #imageLiteral(resourceName: "bird-01.png"))
@@ -151,38 +132,75 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
     }
     
+    // MARK: - Pipes
+    var bottomPipeTexture: SKTexture!
+    var topPipeTexture: SKTexture!
+    let pipeScale: CGFloat = 2.0
+    var pipeWidth: CGFloat!
+    
+    func setupPipes() {
+        pipes = SKNode()
+        moving.addChild(pipes)
+        
+        // setup the pipes textures
+        bottomPipeTexture = SKTexture(image: #imageLiteral(resourceName: "PipeUp.png"))
+        bottomPipeTexture.filteringMode = .nearest
+        topPipeTexture = SKTexture(image: #imageLiteral(resourceName: "PipeDown.png"))
+        topPipeTexture.filteringMode = .nearest
+        
+        // getting actual sizes for pipes taking scale into account
+        let bottomPipeWidth = bottomPipeTexture.size().width * pipeScale
+        let topPipeWidth = topPipeTexture.size().width * pipeScale
+        pipeWidth = max(bottomPipeWidth, topPipeWidth)
+        
+        // create the pipes movement actions
+        let distanceToMove = CGFloat(self.size.width + pipeWidth)
+        movePipesAndRemove =
+            MoveBy(x: -distanceToMove, y: 0.0, duration: TimeInterval(0.005 * distanceToMove))
+                .thenRemove()
+                .skAction
+        
+        // spawn the pipes
+        let spawn = SKAction.run { [weak self] in
+            self?.spawnPipes()
+        }
+        let delay = SKAction.wait(forDuration: TimeInterval(1.0))
+        let spawnThenDelay = SKAction.sequence([spawn, delay])
+        let spawnThenDelayForever = SKAction.repeatForever(spawnThenDelay)
+        self.run(spawnThenDelayForever)
+    }
+    
     func spawnPipes() {
         let pipePair = SKNode()
-        pipePair.position = CGPoint( x: self.frame.size.width + pipeTextureUp.size().width * 2, y: 0 )
+        pipePair.position = CGPoint(x: self.size.width + pipeWidth / 2.0, y: 0)
         pipePair.zPosition = -10
         
-        let height = UInt32( self.frame.size.height / 4)
-        let y = Double(arc4random_uniform(height) + height)
+        let height = UInt32(self.size.height / 4)
+        let bottomPipeCenterY = Double(arc4random_uniform(height) + height)
         
-        let pipeDown = SKSpriteNode(texture: pipeTextureDown)
-        pipeDown.setScale(2.0)
-        pipeDown.position = CGPoint(x: 0.0, y: y + Double(pipeDown.size.height) + verticalPipeGap)
+        let topPipe = SKSpriteNode(texture: topPipeTexture)
+        topPipe.setScale(pipeScale)
+        topPipe.position = CGPoint(x: 0.0, y: bottomPipeCenterY + Double(topPipe.size.height) + verticalPipeGap)
         
+        topPipe.physicsBody = SKPhysicsBody(rectangleOf: topPipe.size)
+        topPipe.physicsBody?.isDynamic = false
+        topPipe.physicsBody?.categoryBitMask = pipeCategory
+        topPipe.physicsBody?.contactTestBitMask = birdCategory
+        pipePair.addChild(topPipe)
         
-        pipeDown.physicsBody = SKPhysicsBody(rectangleOf: pipeDown.size)
-        pipeDown.physicsBody?.isDynamic = false
-        pipeDown.physicsBody?.categoryBitMask = pipeCategory
-        pipeDown.physicsBody?.contactTestBitMask = birdCategory
-        pipePair.addChild(pipeDown)
+        let bottomPipe = SKSpriteNode(texture: bottomPipeTexture)
+        bottomPipe.setScale(pipeScale)
+        bottomPipe.position = CGPoint(x: 0.0, y: bottomPipeCenterY)
         
-        let pipeUp = SKSpriteNode(texture: pipeTextureUp)
-        pipeUp.setScale(2.0)
-        pipeUp.position = CGPoint(x: 0.0, y: y)
-        
-        pipeUp.physicsBody = SKPhysicsBody(rectangleOf: pipeUp.size)
-        pipeUp.physicsBody?.isDynamic = false
-        pipeUp.physicsBody?.categoryBitMask = pipeCategory
-        pipeUp.physicsBody?.contactTestBitMask = birdCategory
-        pipePair.addChild(pipeUp)
+        bottomPipe.physicsBody = SKPhysicsBody(rectangleOf: bottomPipe.size)
+        bottomPipe.physicsBody?.isDynamic = false
+        bottomPipe.physicsBody?.categoryBitMask = pipeCategory
+        bottomPipe.physicsBody?.contactTestBitMask = birdCategory
+        pipePair.addChild(bottomPipe)
         
         let contactNode = SKNode()
-        contactNode.position = CGPoint( x: pipeDown.size.width + bird.size.width / 2, y: self.frame.midY )
-        contactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize( width: pipeUp.size.width, height: self.frame.size.height ))
+        contactNode.position = CGPoint(x: topPipe.size.width + bird.size.width / 2, y: self.frame.midY)
+        contactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize( width: bottomPipe.size.width, height: self.frame.size.height ))
         contactNode.physicsBody?.isDynamic = false
         contactNode.physicsBody?.categoryBitMask = scoreCategory
         contactNode.physicsBody?.contactTestBitMask = birdCategory
