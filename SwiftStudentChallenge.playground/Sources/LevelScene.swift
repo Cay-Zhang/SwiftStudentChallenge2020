@@ -337,13 +337,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
 //        self.removeAllActions()
     }
     
-    // MAKR: - Level Name
+    // MARK: - Level Name
     var levelName: String = "Level name not set."
     var levelNameLabel: SKLabelNode!
     
     func setupLevelNameLabel() {
         levelNameLabel = childNode(withName: "levelNameLabel") as? SKLabelNode
         levelNameLabel.text = levelName
+        
+        Actions(running: .sequentially) {
+            Wait(forDuration: 2)
+            Fade(.out, duration: 0.7)
+            Remove()
+        }.run(on: levelNameLabel)
     }
     
     deinit {
