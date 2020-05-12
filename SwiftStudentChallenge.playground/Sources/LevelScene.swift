@@ -4,19 +4,16 @@ import PlaygroundSupport
 
 class LevelScene: SKScene, SKPhysicsContactDelegate{
     
+    var level: Level!
     
-    var bird:SKSpriteNode!
-    var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
+    var bird: SKSpriteNode!
     
     var movePipesAndRemove: Action!
-    var moving:SKNode!
+    var moving: SKNode!
     var pipes: SKNode!
     var canRestart = Bool()
-    var scoreLabelNode:SKLabelNode!
+    var scoreLabelNode: SKLabelNode!
     var score = NSInteger()
-    
-    // key: bird
-    var birdAction: Action?
  
     let birdCategory: UInt32 = 1 << 0
     let worldCategory: UInt32 = 1 << 1
@@ -38,7 +35,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         self.physicsWorld.contactDelegate = self
         
         // setup background color
-        self.backgroundColor = skyColor
+        self.backgroundColor = level.skyColor
         
         moving = SKNode()
         self.addChild(moving)
@@ -65,7 +62,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y:self.frame.size.height * 0.6)
         bird.run(flap)
         
-        bird.run(birdAction, withKey: "bird")
+        bird.run(level.birdAction, withKey: "bird")
         
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
         bird.physicsBody?.isDynamic = true
@@ -235,7 +232,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.speed = 1.0
         bird.zRotation = 0.0
         
-        bird.run(birdAction, withKey: "bird")
+        bird.run(level.birdAction, withKey: "bird")
         
         // Remove all existing pipes
         pipes.removeAllChildren()
@@ -297,7 +294,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                             self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
                         }
                         Wait(forDuration: 0.05)
-                        SKAction.run { [weak self, skyColor = self.skyColor] in
+                        SKAction.run { [weak self, skyColor = self.level.skyColor] in
                             self?.backgroundColor = skyColor
                         }
                         Wait(forDuration: 0.05)
@@ -338,12 +335,11 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     // MARK: - Level Name
-    var levelName: String = "Level name not set."
     var levelNameLabel: SKLabelNode!
     
     func setupLevelNameLabel() {
         levelNameLabel = childNode(withName: "levelNameLabel") as? SKLabelNode
-        levelNameLabel.text = levelName
+        levelNameLabel.text = level.name
         
         Actions(running: .sequentially) {
             Wait(forDuration: 2)

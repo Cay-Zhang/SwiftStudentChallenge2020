@@ -23,9 +23,7 @@ public struct Level {
                 scene.finish = promise
                 
                 // Setup Level Scene
-                scene.birdAction = self.birdAction
-                scene.levelName = self.name
-                scene.skyColor = self.skyColor
+                scene.level = self
                 
                 // values of scene should be set up before presenting the scene
                 view.presentScene(scene)
