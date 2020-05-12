@@ -154,7 +154,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         bottomPipe.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(bottomPipe)
         
-        let contactNode = SKNode()
+        let contactNode = SKSpriteNode(color: #colorLiteral(red: 0.8421792727, green: 0.1722931956, blue: 0.08535384427, alpha: 0.2963934075), size: CGSize(width: pipeWidth, height: self.size.height))
         contactNode.position = CGPoint(x: pipeWidth + bird.size.width / 2, y: 0.0)
         contactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: pipeWidth, height: self.size.height))
         contactNode.physicsBody?.isDynamic = false

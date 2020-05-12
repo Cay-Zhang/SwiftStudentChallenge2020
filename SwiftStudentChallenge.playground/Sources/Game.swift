@@ -30,6 +30,12 @@ public struct Game {
         return copy
     }
     
+    public func appendingLevel(_ buildLevel: () -> Level) -> Game {
+        var copy = self
+        copy.levels.append(buildLevel())
+        return copy
+    }
+    
 }
 
 extension Game {

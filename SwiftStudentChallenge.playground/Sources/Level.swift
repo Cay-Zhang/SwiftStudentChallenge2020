@@ -6,15 +6,14 @@ public struct Level {
     
     public typealias Result = Bool
     
-    public init(name: String, birdAction: Action? = nil) {
+    public init(name: String) {
         self.name = name
-        self.birdAction = birdAction
     }
     
     public var name = "Level"
     public var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
-    
-    var birdAction: Action?
+    public var pipesCount: Int = 15
+    public var birdAction: Action? = nil
     
     public func run(in view: SKView) -> Future<Level.Result, Never> {
         Future { [self] promise in
@@ -34,8 +33,20 @@ public struct Level {
         }
     }
     
+    public func birdAction(_ action: Action) -> Level {
+        modifying(\.birdAction, action)
+    }
+    
+    public func birdAction(_ buildAction: () -> Action) -> Level {
+        modifying(\.birdAction, buildAction())
+    }
+    
     public func skyColor(_ color: UIColor) -> Level {
         modifying(\.skyColor, color)
+    }
+    
+    public func pipesCount(_ pipesCount: Int) -> Level {
+        modifying(\.pipesCount, pipesCount)
     }
     
 }
