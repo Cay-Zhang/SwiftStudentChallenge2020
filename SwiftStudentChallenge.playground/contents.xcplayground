@@ -4,5 +4,6 @@
         <page name='Main'/>
         <page name='Test'/>
         <page name='Action'/>
+        <page name='Map'/>
     </pages>
 </playground>

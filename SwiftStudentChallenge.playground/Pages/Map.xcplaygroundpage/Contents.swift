@@ -1,8 +1,11 @@
-import Foundation
-import SpriteKit
-import PlaygroundSupport
+//: [Previous](@previous)
 
-public class LevelScene: SKScene, SKPhysicsContactDelegate{
+import SpriteKit
+import SwiftUI
+
+
+
+class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     var level: Level!
     
@@ -10,6 +13,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     var movePipesAndRemove: Action!
     var moving: SKNode!
+    var pipes: SKNode!
     var canRestart = Bool()
     var scoreLabelNode: SKLabelNode!
     var score = NSInteger()
@@ -18,13 +22,10 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     let worldCategory: UInt32 = 1 << 1
     let pipeCategory: UInt32 = 1 << 2
     let scoreCategory: UInt32 = 1 << 3
-    let levelEndCategory: UInt32 = 1 << 4
     
     var finish: (Result<Level.Result, Never>) -> Void = { _ in
         print("finish promise isn't assigned.")
     }
-    
-    
     
     public override func didMove(to view: SKView) {
         
@@ -42,6 +43,8 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         self.addChild(moving)
         
         setupGround()
+        
+        setupPipes()
         
         setupSky()
         
@@ -84,29 +87,83 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         setupLevelNameLabel()
         
-        runMap()
-        
     }
     
-    // MARK: - Map
-    func runMap() {
-        level.mapGenerators.first?.action(in: self)
-            .then(SKAction.run { [weak self] in
-                guard let self = self else { return }
-                let levelEndNode = SKSpriteNode(color: #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 0.5), size: CGSize(width: 20, height: self.size.height))
-                levelEndNode.position = CGPoint(x: self.size.width, y: self.size.height / 2.0)
-                levelEndNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 20, height: self.size.height))
-                levelEndNode.physicsBody?.isDynamic = false
-                levelEndNode.physicsBody?.categoryBitMask = self.levelEndCategory
-                levelEndNode.physicsBody?.contactTestBitMask = self.birdCategory
-                self.moving.addChild(levelEndNode)
-                MoveBy(x: -self.size.width - 20.0, y: 0.0, duration: TimeInterval(0.005 * (self.size.width + 20.0)))
-                    .thenRemove()
-                    .run(on: levelEndNode)
-            })
+    // MARK: - Pipes
+    var bottomPipeTexture: SKTexture!
+    var topPipeTexture: SKTexture!
+    let pipeScale: CGFloat = 2.0
+    var pipeWidth: CGFloat!
+    var verticalPipeGap = 150.0
+    
+    func setupPipes() {
+        pipes = SKNode()
+        moving.addChild(pipes)
+        
+        // setup the pipes textures
+        bottomPipeTexture = SKTexture(image: #imageLiteral(resourceName: "PipeUp.png"))
+        bottomPipeTexture.filteringMode = .nearest
+        topPipeTexture = SKTexture(image: #imageLiteral(resourceName: "PipeDown.png"))
+        topPipeTexture.filteringMode = .nearest
+        
+        // getting actual sizes for pipes taking scale into account
+        let bottomPipeWidth = bottomPipeTexture.size().width * pipeScale
+        let topPipeWidth = topPipeTexture.size().width * pipeScale
+        pipeWidth = max(bottomPipeWidth, topPipeWidth)
+        
+        // create the pipes movement actions
+        let distanceToMove = CGFloat(self.size.width + pipeWidth)
+        movePipesAndRemove =
+            MoveBy(x: -distanceToMove, y: 0.0, duration: TimeInterval(0.005 * distanceToMove))
+                .thenRemove()
+                .skAction
+        
+        // spawn the pipes
+        SKAction.run { [weak self] in self?.spawnPipes() }
+            .then(Wait(forDuration: 1))
+            .repeat(level.pipesCount)
             .run(on: self)
     }
     
+    func spawnPipes() {
+        let pipeGapCenterY = groundHeight + CGFloat.random(in: heightAboveGround * 0.5 ... heightAboveGround * 0.7)
+        
+        let pipePair = SKNode()
+        pipePair.position = CGPoint(x: self.size.width + pipeWidth / 2.0, y: pipeGapCenterY)
+        pipePair.zPosition = -10
+        
+        let topPipe = SKSpriteNode(texture: topPipeTexture)
+        topPipe.setScale(pipeScale)
+        topPipe.position = CGPoint(x: 0.0, y: verticalPipeGap / 2.0 + Double(topPipe.size.height) / 2.0)
+        
+        topPipe.physicsBody = SKPhysicsBody(rectangleOf: topPipe.size)
+        topPipe.physicsBody?.isDynamic = false
+        topPipe.physicsBody?.categoryBitMask = pipeCategory
+        topPipe.physicsBody?.contactTestBitMask = birdCategory
+        pipePair.addChild(topPipe)
+        
+        let bottomPipe = SKSpriteNode(texture: bottomPipeTexture)
+        bottomPipe.setScale(pipeScale)
+        bottomPipe.position = CGPoint(x: 0.0, y: -verticalPipeGap / 2.0 - Double(bottomPipe.size.height) / 2.0)
+        
+        bottomPipe.physicsBody = SKPhysicsBody(rectangleOf: bottomPipe.size)
+        bottomPipe.physicsBody?.isDynamic = false
+        bottomPipe.physicsBody?.categoryBitMask = pipeCategory
+        bottomPipe.physicsBody?.contactTestBitMask = birdCategory
+        pipePair.addChild(bottomPipe)
+        
+        let contactNode = SKSpriteNode(color: #colorLiteral(red: 0.8421792727, green: 0.1722931956, blue: 0.08535384427, alpha: 0.2963934075), size: CGSize(width: pipeWidth, height: self.size.height))
+        contactNode.position = CGPoint(x: pipeWidth + bird.size.width / 2, y: 0.0)
+        contactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: pipeWidth, height: self.size.height))
+        contactNode.physicsBody?.isDynamic = false
+        contactNode.physicsBody?.categoryBitMask = scoreCategory
+        contactNode.physicsBody?.contactTestBitMask = birdCategory
+        pipePair.addChild(contactNode)
+        
+        pipePair.run(movePipesAndRemove)
+        pipes.addChild(pipePair)
+        
+    }
     
     // MARK: - Ground
     var groundTexture: SKTexture = {
@@ -176,7 +233,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.run(level.birdAction, withKey: "bird")
         
         // Remove all existing pipes
-        moving.removeAllChildren()
+        pipes.removeAllChildren()
         
         // Reset _canRestart
         canRestart = false
@@ -212,25 +269,29 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             if ( contact.bodyA.categoryBitMask & scoreCategory ) == scoreCategory || ( contact.bodyB.categoryBitMask & scoreCategory ) == scoreCategory {
                 // Bird has contact with score entity
                 score += 1
-                scoreLabelNode.text = String(score)
-                    
-                // Add a little visual feedback for the score increment
-                Actions(running: .sequentially) {
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                }.run(on: scoreLabelNode)
                 
-            } else if (contact.bodyA.categoryBitMask & levelEndCategory) == levelEndCategory || (contact.bodyB.categoryBitMask & levelEndCategory) == levelEndCategory {
-                // Level End
-                scoreLabelNode.text = "Congratulations!"
-                Actions(running: .sequentially) {
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
-                    self?.finish(.success(true))
+                if score >= level.pipesCount {
+                    // winning!
+                    scoreLabelNode.text = "Congratulations!"
+                    Actions(running: .sequentially) {
+                        Scale(to: 1.5, duration: 0.1)
+                        Scale(to: 1.0, duration: 0.1)
+                        Scale(to: 1.5, duration: 0.1)
+                        Scale(to: 1.0, duration: 0.1)
+                    }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
+                        self?.finish(.success(true))
+                    }
+                } else {
+                    scoreLabelNode.text = String(score)
+                    
+                    Actions(running: .sequentially) {
+                        Scale(to: 1.5, duration: 0.1)
+                        Scale(to: 1.0, duration: 0.1)
+                    }.run(on: scoreLabelNode)
                 }
+                
+                // Add a little visual feedback for the score increment
+                
             } else {
                 
                 moving.speed = 0
@@ -277,7 +338,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         }
     }
     
-    public override func willMove(from view: SKView) {
+    override func willMove(from view: SKView) {
         super.willMove(from: view)
         // uncomment to debug memory issues
 //        for child in children {
@@ -307,3 +368,31 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     
 }
+
+extension SKNode {
+    func run(_ action: Action, completion block: @escaping () -> Void = { }) {
+        run(action.skAction, completion: block)
+    }
+    
+    func run(_ action: SKAction?, completion block: @escaping () -> Void = { }) {
+        if let action = action {
+            run(action, completion: block)
+        }
+    }
+    
+    func run(_ action: SKAction?, withKey key: String) {
+        if let action = action {
+            run(action, withKey: key)
+        }
+    }
+    
+    func run(_ action: Action?, withKey key: String) {
+        if let action = action {
+            run(action.skAction, withKey: key)
+        }
+    }
+}
+
+
+
+//: [Next](@next)
