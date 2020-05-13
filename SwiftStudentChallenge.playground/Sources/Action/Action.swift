@@ -9,6 +9,7 @@ public protocol Action {
     func cached() -> Action
     func `repeat`(_ count: Int) -> Action
     func run(on node: SKNode) -> Void
+    func run(on node: SKNode, onComplete completion: @escaping () -> Void) -> Void
     func run(on node: SKNode, withKey key: String) -> Void
 }
 
@@ -41,6 +42,10 @@ public extension Action {
     
     func run(on node: SKNode) -> Void {
         node.run(self)
+    }
+    
+    func run(on node: SKNode, onComplete completion: @escaping () -> Void) -> Void {
+        node.run(self, completion: completion)
     }
     
     func run(on node: SKNode, withKey key: String) -> Void {

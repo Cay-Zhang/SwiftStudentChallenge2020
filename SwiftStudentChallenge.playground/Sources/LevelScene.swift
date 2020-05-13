@@ -31,7 +31,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         canRestart = true
         
         // setup physics
-        self.physicsWorld.gravity = CGVector( dx: 0.0, dy: -6.0 )
+        self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
         self.physicsWorld.contactDelegate = self
         
         // setup background color
@@ -44,11 +45,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         setupPipes()
         
-        // skyline
         setupSky()
         
         
-        // setup our bird
+        // setup bird
         let birdTexture1 = SKTexture(image: #imageLiteral(resourceName: "bird-01.png"))
         birdTexture1.filteringMode = .nearest
         let birdTexture2 = SKTexture(image: #imageLiteral(resourceName: "bird-02.png"))
@@ -59,7 +59,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         bird = SKSpriteNode(texture: birdTexture1)
         bird.setScale(1.0)
-        bird.position = CGPoint(x: self.frame.size.width * 0.35, y:self.frame.size.height * 0.6)
+        bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
         bird.run(flap)
         
         bird.run(level.birdAction, withKey: "bird")
@@ -118,13 +118,18 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
                 .skAction
         
         // spawn the pipes
-        let spawn = SKAction.run { [weak self] in
-            self?.spawnPipes()
-        }
-        let delay = SKAction.wait(forDuration: TimeInterval(1.0))
-        let spawnThenDelay = SKAction.sequence([spawn, delay])
-        let spawnThenDelayForever = SKAction.repeatForever(spawnThenDelay)
-        self.run(spawnThenDelayForever)
+//        let spawn = SKAction.run { [weak self] in
+//            self?.spawnPipes()
+//        }
+//        let delay = SKAction.wait(forDuration: TimeInterval(1.0))
+//        let spawnThenDelay = SKAction.sequence([spawn, delay])
+//        let spawnThenDelayForever = SKAction.repeatForever(spawnThenDelay)
+//        self.run(spawnThenDelayForever)
+        
+        SKAction.run { [weak self] in self?.spawnPipes() }
+            .then(Wait(forDuration: 1))
+            .repeat(level.pipesCount)
+            .run(on: self)
     }
     
     func spawnPipes() {
@@ -271,13 +276,29 @@ class LevelScene: SKScene, SKPhysicsContactDelegate{
             if ( contact.bodyA.categoryBitMask & scoreCategory ) == scoreCategory || ( contact.bodyB.categoryBitMask & scoreCategory ) == scoreCategory {
                 // Bird has contact with score entity
                 score += 1
-                scoreLabelNode.text = String(score)
+                
+                if score >= level.pipesCount {
+                    // winning!
+                    scoreLabelNode.text = "Congratulations!"
+                    Actions(running: .sequentially) {
+                        Scale(to: 1.5, duration: 0.1)
+                        Scale(to: 1.0, duration: 0.1)
+                        Scale(to: 1.5, duration: 0.1)
+                        Scale(to: 1.0, duration: 0.1)
+                    }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
+                        self?.finish(.success(true))
+                    }
+                } else {
+                    scoreLabelNode.text = String(score)
+                    
+                    Actions(running: .sequentially) {
+                        Scale(to: 1.5, duration: 0.1)
+                        Scale(to: 1.0, duration: 0.1)
+                    }.run(on: scoreLabelNode)
+                }
                 
                 // Add a little visual feedback for the score increment
-                Actions(running: .sequentially) {
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                }.run(on: scoreLabelNode)
+                
             } else {
                 
                 moving.speed = 0
