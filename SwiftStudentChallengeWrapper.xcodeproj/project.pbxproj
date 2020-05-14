@@ -1,0 +1,373 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EE438CBA246CCEF3008D49B5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CB9246CCEF3008D49B5 /* AppDelegate.swift */; };
+		EE438CBC246CCEF3008D49B5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CBB246CCEF3008D49B5 /* SceneDelegate.swift */; };
+		EE438CBE246CCEF3008D49B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CBD246CCEF3008D49B5 /* ContentView.swift */; };
+		EE438CC6246CCEF6008D49B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE438CC4246CCEF6008D49B5 /* LaunchScreen.storyboard */; };
+		EE438CD7246CD21B008D49B5 /* LevelScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CD2246CD21A008D49B5 /* LevelScene.swift */; };
+		EE438CD8246CD21B008D49B5 /* CancelBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CD3246CD21A008D49B5 /* CancelBag.swift */; };
+		EE438CD9246CD21B008D49B5 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CD4246CD21A008D49B5 /* Map.swift */; };
+		EE438CDA246CD21B008D49B5 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CD5246CD21B008D49B5 /* Game.swift */; };
+		EE438CDB246CD21B008D49B5 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CD6246CD21B008D49B5 /* Level.swift */; };
+		EE438CDE246CD22F008D49B5 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CDC246CD22E008D49B5 /* Action.swift */; };
+		EE438CDF246CD22F008D49B5 /* ActionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE438CDD246CD22F008D49B5 /* ActionBuilder.swift */; };
+		EE438CE2246CD3CE008D49B5 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EE438CE1246CD3CE008D49B5 /* Default-568h@2x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		EE438CB6246CCEF3008D49B5 /* SwiftStudentChallengeWrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftStudentChallengeWrapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE438CB9246CCEF3008D49B5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		EE438CBB246CCEF3008D49B5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		EE438CBD246CCEF3008D49B5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EE438CC5246CCEF6008D49B5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		EE438CC7246CCEF6008D49B5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EE438CCE246CD12A008D49B5 /* SwiftStudentChallenge.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SwiftStudentChallenge.playground; sourceTree = "<group>"; };
+		EE438CD2246CD21A008D49B5 /* LevelScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LevelScene.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/LevelScene.swift; sourceTree = "<group>"; };
+		EE438CD3246CD21A008D49B5 /* CancelBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CancelBag.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/CancelBag.swift; sourceTree = "<group>"; };
+		EE438CD4246CD21A008D49B5 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Map.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/Map.swift; sourceTree = "<group>"; };
+		EE438CD5246CD21B008D49B5 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Game.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/Game.swift; sourceTree = "<group>"; };
+		EE438CD6246CD21B008D49B5 /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Level.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/Level.swift; sourceTree = "<group>"; };
+		EE438CDC246CD22E008D49B5 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Action.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/Action/Action.swift; sourceTree = "<group>"; };
+		EE438CDD246CD22F008D49B5 /* ActionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActionBuilder.swift; path = SwiftStudentChallengeWrapper/SwiftStudentChallenge.playground/Sources/Action/ActionBuilder.swift; sourceTree = "<group>"; };
+		EE438CE1246CD3CE008D49B5 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EE438CB3246CCEF3008D49B5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EE438CAD246CCEF3008D49B5 = {
+			isa = PBXGroup;
+			children = (
+				EE438CDC246CD22E008D49B5 /* Action.swift */,
+				EE438CDD246CD22F008D49B5 /* ActionBuilder.swift */,
+				EE438CD3246CD21A008D49B5 /* CancelBag.swift */,
+				EE438CD5246CD21B008D49B5 /* Game.swift */,
+				EE438CD6246CD21B008D49B5 /* Level.swift */,
+				EE438CD2246CD21A008D49B5 /* LevelScene.swift */,
+				EE438CD4246CD21A008D49B5 /* Map.swift */,
+				EE438CB8246CCEF3008D49B5 /* SwiftStudentChallengeWrapper */,
+				EE438CB7246CCEF3008D49B5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EE438CB7246CCEF3008D49B5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EE438CB6246CCEF3008D49B5 /* SwiftStudentChallengeWrapper.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EE438CB8246CCEF3008D49B5 /* SwiftStudentChallengeWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				EE438CCE246CD12A008D49B5 /* SwiftStudentChallenge.playground */,
+				EE438CE0246CD3AA008D49B5 /* Other */,
+			);
+			path = SwiftStudentChallengeWrapper;
+			sourceTree = "<group>";
+		};
+		EE438CE0246CD3AA008D49B5 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				EE438CE1246CD3CE008D49B5 /* Default-568h@2x.png */,
+				EE438CB9246CCEF3008D49B5 /* AppDelegate.swift */,
+				EE438CBB246CCEF3008D49B5 /* SceneDelegate.swift */,
+				EE438CBD246CCEF3008D49B5 /* ContentView.swift */,
+				EE438CC4246CCEF6008D49B5 /* LaunchScreen.storyboard */,
+				EE438CC7246CCEF6008D49B5 /* Info.plist */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EE438CB5246CCEF3008D49B5 /* SwiftStudentChallengeWrapper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE438CCA246CCEF6008D49B5 /* Build configuration list for PBXNativeTarget "SwiftStudentChallengeWrapper" */;
+			buildPhases = (
+				EE438CB2246CCEF3008D49B5 /* Sources */,
+				EE438CB3246CCEF3008D49B5 /* Frameworks */,
+				EE438CB4246CCEF3008D49B5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftStudentChallengeWrapper;
+			productName = SwiftStudentChallengeWrapper;
+			productReference = EE438CB6246CCEF3008D49B5 /* SwiftStudentChallengeWrapper.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE438CAE246CCEF3008D49B5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1140;
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = cayZ;
+				TargetAttributes = {
+					EE438CB5246CCEF3008D49B5 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
+				};
+			};
+			buildConfigurationList = EE438CB1246CCEF3008D49B5 /* Build configuration list for PBXProject "SwiftStudentChallengeWrapper" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EE438CAD246CCEF3008D49B5;
+			productRefGroup = EE438CB7246CCEF3008D49B5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EE438CB5246CCEF3008D49B5 /* SwiftStudentChallengeWrapper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EE438CB4246CCEF3008D49B5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE438CC6246CCEF6008D49B5 /* LaunchScreen.storyboard in Resources */,
+				EE438CE2246CD3CE008D49B5 /* Default-568h@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EE438CB2246CCEF3008D49B5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE438CDE246CD22F008D49B5 /* Action.swift in Sources */,
+				EE438CDF246CD22F008D49B5 /* ActionBuilder.swift in Sources */,
+				EE438CD7246CD21B008D49B5 /* LevelScene.swift in Sources */,
+				EE438CD8246CD21B008D49B5 /* CancelBag.swift in Sources */,
+				EE438CD9246CD21B008D49B5 /* Map.swift in Sources */,
+				EE438CDA246CD21B008D49B5 /* Game.swift in Sources */,
+				EE438CDB246CD21B008D49B5 /* Level.swift in Sources */,
+				EE438CBA246CCEF3008D49B5 /* AppDelegate.swift in Sources */,
+				EE438CBC246CCEF3008D49B5 /* SceneDelegate.swift in Sources */,
+				EE438CBE246CCEF3008D49B5 /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		EE438CC4246CCEF6008D49B5 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EE438CC5246CCEF6008D49B5 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EE438CC8246CCEF6008D49B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EE438CC9246CCEF6008D49B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EE438CCB246CCEF6008D49B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = LCFCZ68733;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = SwiftStudentChallengeWrapper/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = cayZ.SwiftStudentChallengeWrapper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EE438CCC246CCEF6008D49B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = LCFCZ68733;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = SwiftStudentChallengeWrapper/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = cayZ.SwiftStudentChallengeWrapper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EE438CB1246CCEF3008D49B5 /* Build configuration list for PBXProject "SwiftStudentChallengeWrapper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE438CC8246CCEF6008D49B5 /* Debug */,
+				EE438CC9246CCEF6008D49B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE438CCA246CCEF6008D49B5 /* Build configuration list for PBXNativeTarget "SwiftStudentChallengeWrapper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE438CCB246CCEF6008D49B5 /* Debug */,
+				EE438CCC246CCEF6008D49B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EE438CAE246CCEF3008D49B5 /* Project object */;
+}
