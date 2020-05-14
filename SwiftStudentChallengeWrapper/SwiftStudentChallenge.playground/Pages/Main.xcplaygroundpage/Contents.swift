@@ -25,6 +25,20 @@ let birdAction2 = Actions(running: .sequentially) {
 let game = Game()
     .showDebugStatistics()
     .appendingLevel {
+            Level(name: "Wiggle") {
+                Pipes(5, constantInterval: 1)
+                Pipes(10, constantInterval: 0.8)
+                    .pipeGapHeight(115)
+                    .pipeAction {
+                        Actions(running: .sequentially) {
+                            Wiggle(y: 5, duration: 3)
+                            Wait(forRandomDurationIn: 0.3 ... 1.0)
+                            Wiggle(y: 10, duration: 3)
+                        }
+                    }
+            }.skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+        }
+    .appendingLevel {
         Level(name: "Hazy") {
             GravityField(width: 1200, strength: 6)
                 .applyingParticleEffects(fileNamed: "GravityField")
@@ -32,6 +46,7 @@ let game = Game()
             Pipes(5, constantInterval: 1)
             Wait(forDuration: 1)
             NoiseField(width: 1200, strength: 0.07)
+                .applyingParticleEffects(fileNamed: "NoiseField")
             Wait(forDuration: 1)
             Pipes(15)
                 .progressiveIntervals(from: 1.5, to: 0.5)

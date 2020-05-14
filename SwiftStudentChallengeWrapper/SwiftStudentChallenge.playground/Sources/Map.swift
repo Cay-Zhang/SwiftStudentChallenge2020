@@ -12,7 +12,7 @@ public struct Pipes: MapComponent {
     let bottomPipeTexture: SKTexture
     let pipeScale: CGFloat
     let pipeWidth: CGFloat
-    let verticalPipeGap: CGFloat
+    var verticalPipeGap: CGFloat
     let count: Int
     
     var pipeAction: Action? = nil
@@ -115,6 +115,11 @@ public extension Pipes {
     func pipeAction(_ buildAction: () -> Action) -> Self {
         var copy = self
         copy.pipeAction = buildAction()
+        return copy
+    }
+    func pipeGapHeight(_ verticalPipeGap: CGFloat) -> Self {
+        var copy = self
+        copy.verticalPipeGap = verticalPipeGap
         return copy
     }
 }

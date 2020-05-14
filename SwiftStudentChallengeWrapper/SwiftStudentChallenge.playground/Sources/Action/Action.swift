@@ -69,6 +69,51 @@ public struct MoveBy: Action {
     }
 }
 
+public struct Wiggle: Action {
+    let amplitudeX: CGFloat
+    let amplitudeY: CGFloat
+    let duration: TimeInterval
+    
+    public init(x amplitudeX: CGFloat, y amplitudeY: CGFloat, duration: TimeInterval) {
+        self.amplitudeX = amplitudeX
+        self.amplitudeY = amplitudeY
+        self.duration = duration
+    }
+    
+    public init(x amplitudeX: CGFloat, duration: TimeInterval) {
+        self.amplitudeX = amplitudeX
+        self.amplitudeY = 0
+        self.duration = duration
+    }
+    
+    public init(y amplitudeY: CGFloat, duration: TimeInterval) {
+        self.amplitudeX = 0
+        self.amplitudeY = amplitudeY
+        self.duration = duration
+    }
+    
+    public init(amplitude: CGFloat, duration: TimeInterval) {
+        self.amplitudeX = amplitude
+        self.amplitudeY = amplitude
+        self.duration = duration
+    }
+    
+    public var skAction: SKAction {
+        let numberOfShakes = Int(duration / 0.08)
+        var actions = [SKAction]()
+        for _ in 0..<numberOfShakes {
+            let moveX = CGFloat.random(in: -amplitudeX...amplitudeX)
+            let moveY = CGFloat.random(in: -amplitudeY...amplitudeY)
+            let shakeAction = SKAction.moveBy(x: moveX, y: moveY, duration: 0.02)
+            shakeAction.timingMode = SKActionTimingMode.easeOut
+            actions.append(shakeAction)
+            actions.append(shakeAction.reversed())
+        }
+        return SKAction.sequence(actions)
+    }
+    
+}
+
 public struct Rotate: Action {
     let angle: Angle
     let duration: TimeInterval
