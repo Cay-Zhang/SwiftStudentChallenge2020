@@ -85,7 +85,7 @@ public struct Pipes: MapComponent {
         let spawnPipePair = SKAction.run { [self, weak scene, pipeAction] in
             guard let scene = scene else { return }
             let pipePair = self.pipePair(in: scene)
-            scene.moving.addChild(pipePair)
+            scene.levelContent.addChild(pipePair)
             pipePair.run(pipeAction)
         }
         
@@ -147,7 +147,7 @@ extension Field {
                 emitterNode.particlePositionRange = CGVector(dx: self.width, dy: scene.size.height)
                 fieldNode.addChild(emitterNode)
             }
-            scene.addChild(fieldNode)
+            scene.levelContent.addChild(fieldNode)
             
             MoveBy(x: -scene.size.width - self.width, duration: TimeInterval(0.005 * (scene.size.width + self.width)))
                 .thenRemove()

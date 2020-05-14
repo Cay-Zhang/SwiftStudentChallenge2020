@@ -9,7 +9,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     var bird: SKSpriteNode!
     
     var movePipesAndRemove: Action!
-    var moving: SKNode!
+    
     var canRestart = Bool()
     var scoreLabelNode: SKLabelNode!
     var score = NSInteger()
@@ -25,7 +25,17 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         print("finish promise isn't assigned.")
     }
     
+    lazy var movingContent: SKNode = {
+        let node = SKNode()
+        self.addChild(node)
+        return node
+    }()
     
+    lazy var levelContent: SKNode = {
+        let node = SKNode()
+        self.movingContent.addChild(node)
+        return node
+    }()
     
     public override func didMove(to view: SKView) {
         
@@ -33,14 +43,11 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         // setup physics
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
-        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
+        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
         self.physicsWorld.contactDelegate = self
         
         // setup background color
         self.backgroundColor = level.skyColor
-        
-        moving = SKNode()
-        self.addChild(moving)
         
         setupGround()
         
@@ -72,8 +79,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         self.addChild(bird)
         
-        
-        
         // Initialize label and create a label which holds the score
         score = 0
         scoreLabelNode = SKLabelNode(fontNamed:"MarkerFelt-Wide")
@@ -82,10 +87,36 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         scoreLabelNode.text = String(score)
         self.addChild(scoreLabelNode)
         
-        setupLevelNameLabel()
+        bird.speed = 0.0
+        movingContent.speed = 0
         
+    }
+    
+    /// Start/Restart the level.
+    func startLevel(){
+        // Reset canRestart
+        canRestart = false
+        
+        // Remove current level content
+        levelContent.removeAllChildren()
+        // Move bird to original position and reset velocity
+        bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
+        bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+        bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
+        bird.speed = 1.0
+        bird.zRotation = 0.0
+        bird.run(level.birdAction, withKey: "bird")
+        // Start Gravity
+        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
+        // Run level content
         runMap()
-        
+        // Reset score
+        score = 0
+        scoreLabelNode.text = String(score)
+        // Restart animation
+        movingContent.speed = 1
+        // Show level name label
+        showLevelNameLabel()
     }
     
     // MARK: - Map
@@ -100,12 +131,12 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                 levelEndNode.physicsBody?.isDynamic = false
                 levelEndNode.physicsBody?.categoryBitMask = self.levelEndCategory
                 levelEndNode.physicsBody?.contactTestBitMask = self.birdCategory
-                self.moving.addChild(levelEndNode)
+                self.levelContent.addChild(levelEndNode)
                 MoveBy(x: -self.size.width - 20.0, y: 0.0, duration: TimeInterval(0.005 * (self.size.width + 20.0)))
                     .thenRemove()
                     .run(on: levelEndNode)
             })
-            .run(on: self)
+            .run(on: self, withKey: "map")
     }
     
     
@@ -130,7 +161,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             sprite.setScale(2.0)
             sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0)
             sprite.run(moveGroundSpritesForever)
-            moving.addChild(sprite)
+            movingContent.addChild(sprite)
         }
         
         // create the ground
@@ -160,7 +191,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             sprite.zPosition = -20
             sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0 + skyTexture.size().height * 2.0) //
             sprite.run(moveSkySpritesForever)
-            moving.addChild(sprite)
+            movingContent.addChild(sprite)
         }
     }
     
@@ -169,39 +200,16 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     let playHitSoundEffect = PlaySound(fileName: "sfx_hit.wav", waitForCompletion: false).skAction
     let playFlapSoundEffect = PlaySound(fileName: "sfx_wing.wav", waitForCompletion: false).skAction
     
-    func resetScene (){
-        // Move bird to original position and reset velocity
-        bird.position = CGPoint(x: self.frame.size.width / 2.5, y: self.frame.midY)
-        bird.physicsBody?.velocity = CGVector( dx: 0, dy: 0 )
-        bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
-        bird.speed = 1.0
-        bird.zRotation = 0.0
-        
-        bird.run(level.birdAction, withKey: "bird")
-        
-        // Remove all existing pipes
-        moving.removeAllChildren()
-        
-        // Reset _canRestart
-        canRestart = false
-        
-        // Reset score
-        score = 0
-        scoreLabelNode.text = String(score)
-        
-        // Restart animation
-        moving.speed = 1
-    }
-    
+    // MARK: - Touches
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if moving.speed > 0  {
+        if movingContent.speed > 0  {
             for _ in touches { // do we need all touches?
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))
             }
             playFlapSoundEffect.run(on: self)
         } else if canRestart {
-            self.resetScene()
+            self.startLevel()
         }
         super.touchesBegan(touches, with: event)
     }
@@ -213,7 +221,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     public func didBegin(_ contact: SKPhysicsContact) {
-        if moving.speed > 0 {
+        if movingContent.speed > 0 {
             if ( contact.bodyA.categoryBitMask & scoreCategory ) == scoreCategory || ( contact.bodyB.categoryBitMask & scoreCategory ) == scoreCategory {
                 // Bird has contact with score entity
                 score += 1
@@ -240,7 +248,9 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                 }
             } else {
                 
-                moving.speed = 0
+                
+                movingContent.speed = 0
+                self.removeAction(forKey: "map")
                 
                 bird.physicsBody?.collisionBitMask = worldCategory
                 bird.run(Rotate(by: .degrees(Double(bird.position.y) * 2), duration: 1)) { [weak self] in
@@ -267,21 +277,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                     }
                 }.run(on: self, withKey: "flash")
                 
-//                contact.bodyA.applyAngularImpulse(100)
-                
-//                if let node = contact.bodyA.node as? SKSpriteNode {
-//                    print(node)
-//                    let pulsedRed = SKAction.sequence([
-//                        SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0.15),
-//                        SKAction.wait(forDuration: 0.1),
-//                        SKAction.colorize(withColorBlendFactor: 0.0, duration: 0.15)
-//                    ])
-//
-//                    node.run(pulsedRed, withKey: "red")
-//                }
-                
-                
-                finish(.success(true))
+//                finish(.success(true))
             }
         }
     }
@@ -297,16 +293,22 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     // MARK: - Level Name
-    var levelNameLabel: SKLabelNode!
+    lazy var levelNameLabel: SKLabelNode = {
+        if let node = self.childNode(withName: "levelNameLabel") as? SKLabelNode {
+            node.alpha = 0
+            node.text = self.level.name
+            return node
+        } else {
+            print("levelNameLabel not found")
+            fatalError()
+        }
+    }()
     
-    func setupLevelNameLabel() {
-        levelNameLabel = childNode(withName: "levelNameLabel") as? SKLabelNode
-        levelNameLabel.text = level.name
-        
+    func showLevelNameLabel() {
         Actions(running: .sequentially) {
+            Fade(.in, duration: 0.3)
             Wait(forDuration: 2)
             Fade(.out, duration: 0.7)
-            Remove()
         }.run(on: levelNameLabel)
     }
     
