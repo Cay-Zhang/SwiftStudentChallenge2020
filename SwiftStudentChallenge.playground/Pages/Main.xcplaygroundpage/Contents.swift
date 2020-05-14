@@ -25,15 +25,17 @@ let birdAction2 = Actions(running: .sequentially) {
 let game = Game()
     .showDebugStatistics()
     .appendingLevel {
-        Level(name: "Hazy", mapGenerators: [
-            Pipes(10, topPipe: #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: #imageLiteral(resourceName: "PipeUp.png"))
-        ])
-            .birdAction(birdAction)
+        Level(name: "Hazy") {
+            Pipes(5, interval: 1)
+            Pipes(5, interval: 0.8)
+            Pipes(5, interval: 0.5)
+        }.birdAction(birdAction)
     }
     .appendingLevel {
-        Level(name: "Wind", mapGenerators: [])
-            .birdAction(birdAction2)
-            .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+        Level(name: "Wind") {
+            [Pipes(30, interval: 1)]
+        }.birdAction(birdAction2)
+        .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
     }
     
     

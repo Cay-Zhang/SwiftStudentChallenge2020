@@ -90,7 +90,8 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     // MARK: - Map
     func runMap() {
-        level.mapGenerators.first?.action(in: self)
+        let actions = level.mapComponents.map { $0.action(in: self) }
+        Actions(running: .sequentially, actions)
             .then(SKAction.run { [weak self] in
                 guard let self = self else { return }
                 let levelEndNode = SKSpriteNode(color: #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 0.5), size: CGSize(width: 20, height: self.size.height))
@@ -228,6 +229,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                     Scale(to: 1.0, duration: 0.1)
                     Scale(to: 1.5, duration: 0.1)
                     Scale(to: 1.0, duration: 0.1)
+                    Wait(forDuration: 1)
                 }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
                     self?.finish(.success(true))
                 }
