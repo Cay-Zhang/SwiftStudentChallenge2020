@@ -114,6 +114,20 @@ public struct Wiggle: Action {
     
 }
 
+public struct PlaySound: Action {
+    let fileName: String
+    let waitForCompletion: Bool
+    
+    public init(fileName: String, waitForCompletion: Bool) {
+        self.fileName = fileName
+        self.waitForCompletion = waitForCompletion
+    }
+    
+    public var skAction: SKAction {
+        .playSoundFileNamed(fileName, waitForCompletion: waitForCompletion)
+    }
+}
+
 public struct Rotate: Action {
     let angle: Angle
     let duration: TimeInterval

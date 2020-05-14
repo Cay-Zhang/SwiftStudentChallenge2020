@@ -46,7 +46,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         setupSky()
         
-        
         // setup bird
         let birdTexture1 = SKTexture(image: #imageLiteral(resourceName: "bird-01.png"))
         birdTexture1.filteringMode = .nearest
@@ -165,7 +164,10 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         }
     }
     
-    
+    // MARK: - Audio
+    let playScoreSoundEffect = PlaySound(fileName: "sfx_point.wav", waitForCompletion: false).skAction
+    let playHitSoundEffect = PlaySound(fileName: "sfx_hit.wav", waitForCompletion: false).skAction
+    let playFlapSoundEffect = PlaySound(fileName: "sfx_wing.wav", waitForCompletion: false).skAction
     
     func resetScene (){
         // Move bird to original position and reset velocity
@@ -197,6 +199,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))
             }
+            playFlapSoundEffect.run(on: self)
         } else if canRestart {
             self.resetScene()
         }
@@ -218,6 +221,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                     
                 // Add a little visual feedback for the score increment
                 Actions(running: .sequentially) {
+                    playScoreSoundEffect
                     Scale(to: 1.5, duration: 0.1)
                     Scale(to: 1.0, duration: 0.1)
                 }.run(on: scoreLabelNode)
@@ -245,6 +249,8 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                 
                 // Flash background if contact is detected
                 Actions(running: .sequentially) {
+                    playHitSoundEffect
+                    
                     Actions(running: .sequentially) {
                         SKAction.run { [weak self] in
                             self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
