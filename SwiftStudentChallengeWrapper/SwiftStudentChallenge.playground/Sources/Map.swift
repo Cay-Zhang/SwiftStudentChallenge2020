@@ -119,6 +119,82 @@ public extension Pipes {
     }
 }
 
+public protocol Field: MapComponent {
+    var width: CGFloat { get }
+    var strength: Float { get }
+    var particleEffectsFileName: String? { get set }
+    var fieldNode: SKFieldNode { get }
+    func applyingParticleEffects(fileNamed fileName: String) -> Self
+}
+
+extension Field {
+    public func action(in scene: LevelScene) -> Action {
+        SKAction.run { [self, weak scene] in
+            guard let scene = scene else { return }
+            let fieldNode = self.fieldNode
+            fieldNode.categoryBitMask = scene.fieldCategory
+            fieldNode.strength = self.strength
+            fieldNode.position.x = scene.size.width + self.width / 2.0
+            fieldNode.position.y = scene.size.height / 2.0
+            fieldNode.region = SKRegion(size: CGSize(width: self.width, height: scene.size.height))
+            // Applying particle effects if needed
+            if let fileName = self.particleEffectsFileName, let emitterNode = SKEmitterNode(fileNamed: fileName) {
+                emitterNode.particlePositionRange = CGVector(dx: self.width, dy: scene.size.height)
+                fieldNode.addChild(emitterNode)
+            }
+            scene.addChild(fieldNode)
+            
+            MoveBy(x: -scene.size.width - self.width, duration: TimeInterval(0.005 * (scene.size.width + self.width)))
+                .thenRemove()
+                .run(on: fieldNode)
+        }
+    }
+    public func applyingParticleEffects(fileNamed fileName: String) -> Self {
+        var copy = self
+        copy.particleEffectsFileName = fileName
+        return copy
+    }
+}
+
+public struct GravityField: Field {
+    
+    public let width: CGFloat
+    public let strength: Float
+    public var particleEffectsFileName: String?
+    
+    public init(width: CGFloat, strength: Float) {
+        self.width = width
+        self.strength = strength
+        self.particleEffectsFileName = nil
+    }
+    
+    public var fieldNode: SKFieldNode {
+        SKFieldNode.linearGravityField(withVector: [0, -1, 0])
+    }
+}
+
+public struct NoiseField: Field {
+    public let width: CGFloat
+    public let strength: Float
+    public var particleEffectsFileName: String?
+    
+    public init(width: CGFloat, strength: Float) {
+        self.width = width
+        self.strength = strength
+        self.particleEffectsFileName = nil
+    }
+    
+    public var fieldNode: SKFieldNode {
+        SKFieldNode.noiseField(withSmoothness: 0.8, animationSpeed: 0.5)
+    }
+}
+
+extension Wait: MapComponent {
+    public func action(in scene: LevelScene) -> Action {
+        self
+    }
+}
+
 /// A custom parameter attribute that constructs paths from closures.
 @_functionBuilder
 public struct MapBuilder {

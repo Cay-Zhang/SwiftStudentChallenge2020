@@ -26,9 +26,13 @@ let game = Game()
     .showDebugStatistics()
     .appendingLevel {
         Level(name: "Hazy") {
+            GravityField(width: 1200, strength: 6)
+                .applyingParticleEffects(fileNamed: "GravityField")
+            Wait(forDuration: 1)
             Pipes(5, constantInterval: 1)
-//            Pipes(5, interval: 0.8)
-//            Pipes(5, interval: 0.5)
+            Wait(forDuration: 1)
+            NoiseField(width: 1200, strength: 0.07)
+            Wait(forDuration: 1)
             Pipes(15)
                 .progressiveIntervals(from: 1.5, to: 0.5)
                 .pipeAction {

@@ -19,6 +19,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     let pipeCategory: UInt32 = 1 << 2
     let scoreCategory: UInt32 = 1 << 3
     let levelEndCategory: UInt32 = 1 << 4
+    let fieldCategory: UInt32 = 1 << 5
     
     var finish: (Result<Level.Result, Never>) -> Void = { _ in
         print("finish promise isn't assigned.")
@@ -65,10 +66,10 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
         bird.physicsBody?.isDynamic = true
         bird.physicsBody?.allowsRotation = false
-        
         bird.physicsBody?.categoryBitMask = birdCategory
         bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
         bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
+        bird.physicsBody?.fieldBitMask = fieldCategory
         
         self.addChild(bird)
         
