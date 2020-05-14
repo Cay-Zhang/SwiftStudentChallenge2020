@@ -26,14 +26,24 @@ let game = Game()
     .showDebugStatistics()
     .appendingLevel {
         Level(name: "Hazy") {
-            Pipes(5, interval: 1)
-            Pipes(5, interval: 0.8)
-            Pipes(5, interval: 0.5)
+            Pipes(5, constantInterval: 1)
+//            Pipes(5, interval: 0.8)
+//            Pipes(5, interval: 0.5)
+            Pipes(15)
+                .progressiveIntervals(from: 1.5, to: 0.5)
+                .pipeAction {
+                    Actions(running: .sequentially) {
+                        MoveBy(y: 100, duration: 2)
+                        Wait(forRandomDurationIn: 0.3 ... 1.0)
+                        MoveBy(y: -100, duration: 2)
+                    }
+                }
         }.birdAction(birdAction)
     }
     .appendingLevel {
         Level(name: "Wind") {
-            [Pipes(30, interval: 1)]
+//            [Pipes(30, interval: 1)]
+            []
         }.birdAction(birdAction2)
         .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
     }

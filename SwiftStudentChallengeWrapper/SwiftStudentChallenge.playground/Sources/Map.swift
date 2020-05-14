@@ -14,9 +14,11 @@ public struct Pipes: MapComponent {
     let pipeWidth: CGFloat
     let verticalPipeGap: CGFloat
     let count: Int
-    let interval: TimeInterval
     
-    public init(_ count: Int, interval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), verticalPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0) {
+    var pipeAction: Action? = nil
+    var intervals: (_ pipeNumber: Int) -> TimeInterval
+    
+    public init(_ count: Int, constantInterval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), verticalPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0) {
         // Setting up textures
         self.topPipeTexture = SKTexture(image: topPipe)
         self.topPipeTexture.filteringMode = .nearest
@@ -29,7 +31,7 @@ public struct Pipes: MapComponent {
         self.pipeWidth = max(bottomPipeWidth, topPipeWidth)
         // Setting other properties
         self.count = count
-        self.interval = interval
+        self.intervals = { _ in constantInterval }
         self.verticalPipeGap = verticalPipeGap
     }
     
@@ -72,24 +74,50 @@ public struct Pipes: MapComponent {
     }
     
     public func action(in scene: LevelScene) -> Action {
-        // Create the pipes movement actions
-        let movement =
+        // Create the pipes movement actions along with the user-defined pipe action
+        let pipeAction = Actions(running: .parallelly) {
             MoveBy(x: -scene.size.width - pipeWidth, y: 0.0, duration: TimeInterval(0.005 * (scene.size.width + pipeWidth)))
                 .thenRemove()
-                .skAction
+            self.pipeAction
+        }.skAction
         
-        // repeatedly spawn the pipes
-        return SKAction.run { [self, weak scene, movement] in
+        // instant action to spawn the pipePair, attach the action, and move it
+        let spawnPipePair = SKAction.run { [self, weak scene, pipeAction] in
             guard let scene = scene else { return }
             let pipePair = self.pipePair(in: scene)
             scene.moving.addChild(pipePair)
-            pipePair.run(movement)
-        }.then(Wait(forDuration: self.interval))
-        .repeat(self.count)
+            pipePair.run(pipeAction)
+        }
         
+        let actions = (1...count).lazy
+            .flatMap { (pipeNumber: Int) -> [Action] in
+                [spawnPipePair, Wait(forDuration: self.intervals(pipeNumber))]
+            }
+        return Actions(running: .sequentially, Array(actions))
     }
 }
 
+
+public extension Pipes {
+    func customIntervals(_ intervals: @escaping (_ pipeNumber: Int) -> TimeInterval) -> Self {
+        var copy = self
+        copy.intervals = intervals
+        return copy
+    }
+    func progressiveIntervals(from fromInterval: TimeInterval, to toInterval: TimeInterval) -> Self {
+        let step = (toInterval - fromInterval) / Double(self.count - 1)
+        var copy = self
+        copy.intervals = { [fromInterval, step] pipeNumber in
+            fromInterval + step * Double(pipeNumber - 1)
+        }
+        return copy
+    }
+    func pipeAction(_ buildAction: () -> Action) -> Self {
+        var copy = self
+        copy.pipeAction = buildAction()
+        return copy
+    }
+}
 
 /// A custom parameter attribute that constructs paths from closures.
 @_functionBuilder
