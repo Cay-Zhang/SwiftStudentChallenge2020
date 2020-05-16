@@ -52,7 +52,7 @@ public struct Pipes: MapComponent {
         
         topPipe.physicsBody = SKPhysicsBody(rectangleOf: topPipe.size)
         topPipe.physicsBody?.isDynamic = false
-        topPipe.physicsBody?.categoryBitMask = scene.pipeCategory
+        topPipe.physicsBody?.categoryBitMask = scene.fatalLevelContentCategory
         topPipe.physicsBody?.contactTestBitMask = scene.birdCategory
         pipePair.addChild(topPipe)
         
@@ -64,7 +64,7 @@ public struct Pipes: MapComponent {
         
         bottomPipe.physicsBody = SKPhysicsBody(rectangleOf: bottomPipe.size)
         bottomPipe.physicsBody?.isDynamic = false
-        bottomPipe.physicsBody?.categoryBitMask = scene.pipeCategory
+        bottomPipe.physicsBody?.categoryBitMask = scene.fatalLevelContentCategory
         bottomPipe.physicsBody?.contactTestBitMask = scene.birdCategory
         pipePair.addChild(bottomPipe)
         

@@ -4,19 +4,20 @@ import PlaygroundSupport
 
 public class LevelScene: SKScene, SKPhysicsContactDelegate{
     
+    var state: State?
+    
     var level: Level!
     
     var bird: SKSpriteNode!
     
     var movePipesAndRemove: Action!
     
-    var canRestart = Bool()
     var scoreLabelNode: SKLabelNode!
     var score = NSInteger()
  
     let birdCategory: UInt32 = 1 << 0
-    let worldCategory: UInt32 = 1 << 1
-    let pipeCategory: UInt32 = 1 << 2
+    let boundaryCategory: UInt32 = 1 << 1
+    let fatalLevelContentCategory: UInt32 = 1 << 2
     let scoreCategory: UInt32 = 1 << 3
     let levelEndCategory: UInt32 = 1 << 4
     let fieldCategory: UInt32 = 1 << 5
@@ -38,11 +39,9 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }()
     
     public override func didMove(to view: SKView) {
-        
-        canRestart = true
-        
         // setup physics
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+        self.physicsBody?.categoryBitMask = boundaryCategory
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
         self.physicsWorld.contactDelegate = self
         
@@ -67,14 +66,11 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
         bird.run(flap)
         
-        bird.run(level.birdAction, withKey: "bird")
-        
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
         bird.physicsBody?.isDynamic = true
         bird.physicsBody?.allowsRotation = false
         bird.physicsBody?.categoryBitMask = birdCategory
-        bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
-        bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
+        bird.physicsBody?.contactTestBitMask = fatalLevelContentCategory
         bird.physicsBody?.fieldBitMask = fieldCategory
         
         self.addChild(bird)
@@ -90,19 +86,21 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.speed = 0.0
         movingContent.speed = 0
         
+        self.state = .initialized
+        
     }
     
     /// Start/Restart the level.
     func startLevel(){
-        // Reset canRestart
-        canRestart = false
+        self.state = .playing
         
         // Remove current level content
         levelContent.removeAllChildren()
+//        self.removeAction(forKey: "flash")
         // Move bird to original position and reset velocity
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
         bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
+        bird.physicsBody?.collisionBitMask = fatalLevelContentCategory | boundaryCategory
         bird.speed = 1.0
         bird.zRotation = 0.0
         bird.run(level.birdAction, withKey: "bird")
@@ -169,7 +167,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         ground.position = CGPoint(x: 0, y: groundTexture.size().height)
         ground.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundTexture.size().height * 2.0))
         ground.physicsBody?.isDynamic = false
-        ground.physicsBody?.categoryBitMask = worldCategory
+        ground.physicsBody?.categoryBitMask = fatalLevelContentCategory
         self.addChild(ground)
     }
     
@@ -202,13 +200,13 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     // MARK: - Touches
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if movingContent.speed > 0  {
-            for _ in touches { // do we need all touches?
+        if case .playing = self.state {
+            for _ in touches {
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))
             }
             playFlapSoundEffect.run(on: self)
-        } else if canRestart {
+        } else if self.state == .initialized || self.state == .waitingForRestart {
             self.startLevel()
         }
         super.touchesBegan(touches, with: event)
@@ -221,65 +219,62 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     public func didBegin(_ contact: SKPhysicsContact) {
-        if movingContent.speed > 0 {
-            if ( contact.bodyA.categoryBitMask & scoreCategory ) == scoreCategory || ( contact.bodyB.categoryBitMask & scoreCategory ) == scoreCategory {
-                // Bird has contact with score entity
-                score += 1
-                scoreLabelNode.text = String(score)
-                    
-                // Add a little visual feedback for the score increment
-                Actions(running: .sequentially) {
-                    playScoreSoundEffect
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                }.run(on: scoreLabelNode)
+        guard self.state == .playing else { return }
+        
+        if (contact.bodyA.categoryBitMask & scoreCategory) == scoreCategory || (contact.bodyB.categoryBitMask & scoreCategory) == scoreCategory {
+            // Bird has contact with score entity
+            score += 1
+            scoreLabelNode.text = String(score)
                 
-            } else if (contact.bodyA.categoryBitMask & levelEndCategory) == levelEndCategory || (contact.bodyB.categoryBitMask & levelEndCategory) == levelEndCategory {
-                // Level End
-                scoreLabelNode.text = "Congratulations!"
-                Actions(running: .sequentially) {
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                    Scale(to: 1.5, duration: 0.1)
-                    Scale(to: 1.0, duration: 0.1)
-                    Wait(forDuration: 1)
-                }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
-                    self?.finish(.success(true))
-                }
-            } else {
-                
-                
-                movingContent.speed = 0
-                self.removeAction(forKey: "map")
-                
-                bird.physicsBody?.collisionBitMask = worldCategory
-                bird.run(Rotate(by: .degrees(Double(bird.position.y) * 2), duration: 1)) { [weak self] in
+            // Add a little visual feedback for the score increment
+            Actions(running: .sequentially) {
+                playScoreSoundEffect
+                Scale(to: 1.5, duration: 0.1)
+                Scale(to: 1.0, duration: 0.1)
+            }.run(on: scoreLabelNode)
+            
+        } else if (contact.bodyA.categoryBitMask & levelEndCategory) == levelEndCategory || (contact.bodyB.categoryBitMask & levelEndCategory) == levelEndCategory {
+            self.state = .finished
+            // Level End
+            scoreLabelNode.text = "Congratulations!"
+            Actions(running: .sequentially) {
+                Scale(to: 1.5, duration: 0.1)
+                Scale(to: 1.0, duration: 0.1)
+                Scale(to: 1.5, duration: 0.1)
+                Scale(to: 1.0, duration: 0.1)
+                Wait(forDuration: 1)
+            }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
+                self?.finish(.success(true))
+            }
+        } else {
+            // Dead
+            self.state = .waitingForRestart
+            
+            movingContent.speed = 0
+            self.removeAction(forKey: "map")
+            
+            bird.run(Rotate(by: .degrees(Double(bird.position.y) * 2), duration: 1)) { [weak self] in
+                if case .waitingForRestart = self?.state {
                     self?.bird.speed = 0
                 }
-                
-                // Flash background if contact is detected
-                Actions(running: .sequentially) {
-                    playHitSoundEffect
-                    
-                    Actions(running: .sequentially) {
-                        SKAction.run { [weak self] in
-                            self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
-                        }
-                        Wait(forDuration: 0.05)
-                        SKAction.run { [weak self, skyColor = self.level.skyColor] in
-                            self?.backgroundColor = skyColor
-                        }
-                        Wait(forDuration: 0.05)
-                    }.repeat(4)
-                    
-                    SKAction.run { [weak self] in
-                        self?.canRestart = true
-                    }
-                }.run(on: self, withKey: "flash")
-                
-//                finish(.success(true))
             }
+            
+            // Flash background if contact is detected
+            Actions(running: .sequentially) {
+                playHitSoundEffect
+                Actions(running: .sequentially) {
+                    SKAction.run { [weak self] in
+                        self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
+                    }
+                    Wait(forDuration: 0.05)
+                    SKAction.run { [weak self, skyColor = self.level.skyColor] in
+                        self?.backgroundColor = skyColor
+                    }
+                    Wait(forDuration: 0.05)
+                }.repeat(4)
+            }.run(on: self, withKey: "flash")
         }
+        
     }
     
     public override func willMove(from view: SKView) {
@@ -317,4 +312,14 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     
+}
+
+extension LevelScene {
+    enum State {
+        /// The state where the scene was moved to a view but is not yet started.
+        case initialized
+        case playing
+        case waitingForRestart
+        case finished
+    }
 }
