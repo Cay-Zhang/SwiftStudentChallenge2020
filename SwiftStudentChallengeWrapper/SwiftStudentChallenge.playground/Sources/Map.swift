@@ -11,6 +11,7 @@ public struct Pipes: MapComponent {
     let topPipeTexture: SKTexture
     let bottomPipeTexture: SKTexture
     let pipeScale: CGFloat
+    let pipeHeightScale: CGFloat
     let pipeWidth: CGFloat
     var verticalPipeGap: CGFloat
     let count: Int
@@ -18,7 +19,7 @@ public struct Pipes: MapComponent {
     var pipeAction: Action? = nil
     var intervals: (_ pipeNumber: Int) -> TimeInterval
     
-    public init(_ count: Int, constantInterval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), verticalPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0) {
+    public init(_ count: Int, constantInterval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), verticalPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
         // Setting up textures
         self.topPipeTexture = SKTexture(image: topPipe)
         self.topPipeTexture.filteringMode = .nearest
@@ -30,6 +31,7 @@ public struct Pipes: MapComponent {
         let bottomPipeWidth = bottomPipeTexture.size().width * pipeScale
         self.pipeWidth = max(bottomPipeWidth, topPipeWidth)
         // Setting other properties
+        self.pipeHeightScale = pipeHeightScale
         self.count = count
         self.intervals = { _ in constantInterval }
         self.verticalPipeGap = verticalPipeGap
@@ -43,7 +45,9 @@ public struct Pipes: MapComponent {
         pipePair.zPosition = -10
         
         let topPipe = SKSpriteNode(texture: topPipeTexture)
+        topPipe.centerRect = CGRect(x: 0.3, y: 0.3, width: 0.4, height: 0.6)
         topPipe.setScale(pipeScale)
+        topPipe.yScale *= pipeHeightScale
         topPipe.position = CGPoint(x: 0.0, y: verticalPipeGap / 2.0 + topPipe.size.height / 2.0)
         
         topPipe.physicsBody = SKPhysicsBody(rectangleOf: topPipe.size)
@@ -53,7 +57,9 @@ public struct Pipes: MapComponent {
         pipePair.addChild(topPipe)
         
         let bottomPipe = SKSpriteNode(texture: bottomPipeTexture)
+        bottomPipe.centerRect = CGRect(x: 0.3, y: 0.1, width: 0.4, height: 0.6)
         bottomPipe.setScale(pipeScale)
+        bottomPipe.yScale *= pipeHeightScale
         bottomPipe.position = CGPoint(x: 0.0, y: -verticalPipeGap / 2.0 - bottomPipe.size.height / 2.0)
         
         bottomPipe.physicsBody = SKPhysicsBody(rectangleOf: bottomPipe.size)
