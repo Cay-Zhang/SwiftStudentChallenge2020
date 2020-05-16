@@ -22,54 +22,53 @@ let birdAction2 = Actions(running: .sequentially) {
     Decolorize(duration: 0.2)
 }.repeatForever()
 
-let game = Game()
-    .showDebugStatistics()
-    .appendingLevel {
-        Level(name: "Hazy") {
-            GravityField(width: 1200, strength: 6)
-                .applyingParticleEffects(fileNamed: "GravityField")
-            Wait(forDuration: 1)
-            Pipes(5, constantInterval: 1)
-            Wait(forDuration: 1)
-            NoiseField(width: 1200, strength: 0.07)
-                .applyingParticleEffects(fileNamed: "NoiseField")
-            Wait(forDuration: 1)
-            Pipes(15, pipeHeightScale: 2.0)
-                .progressiveIntervals(from: 1.5, to: 0.5)
-                .pipeAction {
-                    Actions(running: .sequentially) {
-                        MoveBy(y: 100, duration: 2)
-                        Wait(forRandomDurationIn: 0.3 ... 1.0)
-                        MoveBy(y: -100, duration: 2)
-                    }
+let game = Game {
+    Level(name: "Hazy") {
+        GravityField(width: 1200, strength: 6)
+            .applyingParticleEffects(fileNamed: "GravityField")
+        Wait(forDuration: 1)
+        Pipes(5, constantInterval: 1)
+        Wait(forDuration: 1)
+        NoiseField(width: 1200, strength: 0.07)
+            .applyingParticleEffects(fileNamed: "NoiseField")
+        Wait(forDuration: 1)
+        Pipes(15, pipeHeightScale: 2.0)
+            .progressiveIntervals(from: 1.5, to: 0.5)
+            .pipeAction {
+                Actions(running: .sequentially) {
+                    MoveBy(y: 100, duration: 2)
+                    Wait(forRandomDurationIn: 0.3 ... 1.0)
+                    MoveBy(y: -100, duration: 2)
                 }
-        }.birdAction(birdAction)
-    }
-    .appendingLevel {
-            Level(name: "Wiggle") {
-                Pipes(5, constantInterval: 1)
-                Pipes(10, constantInterval: 0.8)
-                    .pipeGapHeight(150)
-                    .pipeAction {
-                        Actions(running: .sequentially) {
-                            Wiggle(y: 5, duration: 3)
-                            Wait(forRandomDurationIn: 0.3 ... 1.0)
-                            Wiggle(y: 10, duration: 3)
-                        }
-                    }
-            }.skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
-        }
+            }
+    }.birdAction(birdAction)
 
-    .appendingLevel {
-        Level(name: "Wind") {
-//            [Pipes(30, interval: 1)]
-            []
-        }.birdAction(birdAction2)
-        .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
-    }
+    Level(name: "Wiggle") {
+        Pipes(5, constantInterval: 1)
+        Pipes(10, constantInterval: 0.8)
+            .pipeGapHeight(150)
+            .pipeAction {
+                Actions(running: .sequentially) {
+                    Wiggle(y: 5, duration: 3)
+                    Wait(forRandomDurationIn: 0.3 ... 1.0)
+                    Wiggle(y: 10, duration: 3)
+                }
+            }
+    }.skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
     
-    
+    Level(name: "Wind") {
+        Pipes(30, constantInterval: 1)
+    }.birdAction(birdAction2)
+    .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+}.showDebugStatistics()
+
 game.runLevels()
+
+let game2 = Game {
+    Level(name: "Test") {
+        Pipes(15)
+    }
+}
 //#-end-editable-code
 
 //#-hidden-code

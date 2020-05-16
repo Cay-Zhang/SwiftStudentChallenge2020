@@ -18,6 +18,14 @@ public struct Game {
         self.levels = levels
     }
     
+    public init(@GameBuilder _ buildLevels: () -> [Level]){
+        self.levels = buildLevels()
+    }
+    
+    public init(@GameBuilder _ buildLevels: () -> Level){
+        self.levels = [buildLevels()]
+    }
+    
     public func showDebugStatistics() -> Game {
         var copy = self
         copy.isDebugStatisticsShown = true
@@ -92,4 +100,15 @@ public extension Game {
     }
     
     
+}
+
+@_functionBuilder
+public struct GameBuilder {
+    public static func buildBlock(_ levels: Level?...) -> [Level] {
+        return levels.compactMap { $0 }
+    }
+    
+    public static func buildBlock(_ levels: Level...) -> [Level] {
+        return levels
+    }
 }

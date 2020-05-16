@@ -250,6 +250,11 @@ public struct Actions: Action {
         self.actions = buildActions()
     }
     
+    public init(running executionMode: ExecutionMode, @ActionBuilder _ buildActions: () -> Action) {
+        self.executionMode = executionMode
+        self.actions = [buildActions()]
+    }
+    
     public var skAction: SKAction {
         switch executionMode {
         case .sequentially:

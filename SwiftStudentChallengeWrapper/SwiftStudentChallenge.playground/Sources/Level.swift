@@ -11,6 +11,11 @@ public struct Level {
         self.mapComponents = buildMapComponents()
     }
     
+    public init(name: String, @MapBuilder _ buildMapComponents: () -> MapComponent) {
+        self.name = name
+        self.mapComponents = [buildMapComponents()]
+    }
+    
     public var name = "Level"
     public var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
     public var birdAction: Action? = nil

@@ -206,7 +206,6 @@ extension Wait: MapComponent {
     }
 }
 
-/// A custom parameter attribute that constructs paths from closures.
 @_functionBuilder
 public struct MapBuilder {
     
@@ -224,22 +223,5 @@ public struct MapBuilder {
     
     public static func buildBlock(_ mapComponents: MapComponent...) -> [MapComponent] {
         return mapComponents
-    }
-    
-    /// Provides support for “if” statements in multi-statement closures, producing an optional path component that is added only when the condition evaluates to true.
-    public static func buildIf(_ mapComponent: MapComponent?) -> MapComponent? {
-        return mapComponent
-    }
-    
-    public static func buildOptional(_ mapComponent: MapComponent?) -> MapComponent? {
-        return mapComponent
-    }
-    
-    public static func buildEither(first: MapComponent) -> MapComponent {
-        return first
-    }
-
-    public static func buildEither(second: MapComponent) -> MapComponent {
-        return second
     }
 }
