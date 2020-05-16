@@ -86,6 +86,8 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.speed = 0.0
         movingContent.speed = 0
         
+        mainLabel.run(showAndHideMainLabel, withKey: showAndHideMainLabelActionKey)
+        
         self.state = .initialized
         
     }
@@ -93,10 +95,8 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     /// Start/Restart the level.
     func startLevel(){
         self.state = .playing
-        
         // Remove current level content
         levelContent.removeAllChildren()
-//        self.removeAction(forKey: "flash")
         // Move bird to original position and reset velocity
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
         bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
@@ -113,8 +113,8 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         scoreLabelNode.text = String(score)
         // Restart animation
         movingContent.speed = 1
-        // Show level name label
-        showLevelNameLabel()
+        // Show level name
+        showLevelName()
     }
     
     // MARK: - Map
@@ -250,6 +250,15 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             // Dead
             self.state = .waitingForRestart
             
+            Actions(running: .sequentially) {
+                Fade(.out, duration: 0.1)
+                SKAction.run { [weak self] in
+                    guard let self = self, self.state == .waitingForRestart else { return }
+                    self.mainLabel.text = "Click to Restart"
+                    self.mainLabel.run(self.showAndHideMainLabel, withKey: self.showAndHideMainLabelActionKey)
+                }
+            }.run(on: mainLabel)
+            
             movingContent.speed = 0
             self.removeAction(forKey: "map")
             
@@ -287,28 +296,41 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
 //        self.removeAllActions()
     }
     
-    // MARK: - Level Name
-    lazy var levelNameLabel: SKLabelNode = {
-        if let node = self.childNode(withName: "levelNameLabel") as? SKLabelNode {
-            node.alpha = 0
-            node.text = self.level.name
+    // MARK: - Main Label
+    lazy var mainLabel: SKLabelNode = {
+        if let node = self.childNode(withName: "mainLabel") as? SKLabelNode {
             return node
         } else {
-            print("levelNameLabel not found")
+            print("mainLabel not found")
             fatalError()
         }
     }()
     
-    func showLevelNameLabel() {
+    let showAndHideMainLabel: Action = Actions(running: .sequentially) {
+        Fade(.in, duration: 0.5)
+        Wait(forDuration: 0.5)
+        Fade(.out, duration: 0.5)
+        Wait(forDuration: 0.5)
+    }.repeatForever().skAction
+    
+    let showAndHideMainLabelActionKey = "showAndHide"
+    
+    func showLevelName() {
+        mainLabel.removeAction(forKey: showAndHideMainLabelActionKey)
         Actions(running: .sequentially) {
+            Fade(.out, duration: 0.2)
+            SKAction.run { [weak mainLabel = self.mainLabel, levelName = self.level.name] in
+                mainLabel?.text = levelName
+            }
             Fade(.in, duration: 0.3)
             Wait(forDuration: 2)
             Fade(.out, duration: 0.7)
-        }.run(on: levelNameLabel)
+        }.run(on: mainLabel)
     }
     
     deinit {
-        print("LevelScene: deinit")
+        // Uncomment to debug
+        // print("LevelScene: deinit")
     }
     
     
