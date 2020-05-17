@@ -5,8 +5,12 @@ import Combine
 
 
 
-var game = Game()
-game.levels = [Int](1...10).map(String.init).map(Level.init)
+let game = Game {
+    Level(name: "Easy") {
+        Pipes(5)
+    }
+}
+
 game.runLevels()
 //: [Next](@next)
 

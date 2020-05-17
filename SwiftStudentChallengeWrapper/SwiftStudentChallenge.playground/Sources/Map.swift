@@ -68,14 +68,6 @@ public struct Pipes: MapComponent {
         bottomPipe.physicsBody?.contactTestBitMask = scene.birdCategory
         pipePair.addChild(bottomPipe)
         
-        let scoreNode = SKSpriteNode(color: #colorLiteral(red: 0.8421792727, green: 0.1722931956, blue: 0.08535384427, alpha: 0), size: CGSize(width: pipeWidth, height: scene.size.height))
-        scoreNode.position = CGPoint(x: pipeWidth + scene.bird.size.width / 2, y: 0.0)
-        scoreNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: pipeWidth, height: scene.size.height))
-        scoreNode.physicsBody?.isDynamic = false
-        scoreNode.physicsBody?.categoryBitMask = scene.scoreCategory
-        scoreNode.physicsBody?.contactTestBitMask = scene.birdCategory
-        pipePair.addChild(scoreNode)
-        
         return pipePair
     }
     

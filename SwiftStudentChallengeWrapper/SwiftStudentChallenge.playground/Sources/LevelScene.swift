@@ -11,16 +11,12 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     var bird: SKSpriteNode!
     
     var movePipesAndRemove: Action!
-    
-    var scoreLabelNode: SKLabelNode!
-    var score = NSInteger()
  
     let birdCategory: UInt32 = 1 << 0
     let boundaryCategory: UInt32 = 1 << 1
     let fatalLevelContentCategory: UInt32 = 1 << 2
-    let scoreCategory: UInt32 = 1 << 3
-    let levelEndCategory: UInt32 = 1 << 4
-    let fieldCategory: UInt32 = 1 << 5
+    let levelEndCategory: UInt32 = 1 << 3
+    let fieldCategory: UInt32 = 1 << 4
     
     var finish: (Result<Level.Result, Never>) -> Void = { _ in
         print("finish promise isn't assigned.")
@@ -75,14 +71,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         
         self.addChild(bird)
         
-        // Initialize label and create a label which holds the score
-        score = 0
-        scoreLabelNode = SKLabelNode(fontNamed:"MarkerFelt-Wide")
-        scoreLabelNode.position = CGPoint( x: self.frame.midX, y: 3 * self.frame.size.height / 4 )
-        scoreLabelNode.zPosition = 100
-        scoreLabelNode.text = String(score)
-        self.addChild(scoreLabelNode)
-        
         bird.speed = 0.0
         movingContent.speed = 0
         
@@ -108,9 +96,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
         // Run level content
         runMap()
-        // Reset score
-        score = 0
-        scoreLabelNode.text = String(score)
         // Restart animation
         movingContent.speed = 1
         // Show level name
@@ -221,31 +206,26 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     public func didBegin(_ contact: SKPhysicsContact) {
         guard self.state == .playing else { return }
         
-        if (contact.bodyA.categoryBitMask & scoreCategory) == scoreCategory || (contact.bodyB.categoryBitMask & scoreCategory) == scoreCategory {
-            // Bird has contact with score entity
-            score += 1
-            scoreLabelNode.text = String(score)
-                
-            // Add a little visual feedback for the score increment
-            Actions(running: .sequentially) {
-                playScoreSoundEffect
-                Scale(to: 1.5, duration: 0.1)
-                Scale(to: 1.0, duration: 0.1)
-            }.run(on: scoreLabelNode)
-            
-        } else if (contact.bodyA.categoryBitMask & levelEndCategory) == levelEndCategory || (contact.bodyB.categoryBitMask & levelEndCategory) == levelEndCategory {
+        if (contact.bodyA.categoryBitMask & levelEndCategory) == levelEndCategory || (contact.bodyB.categoryBitMask & levelEndCategory) == levelEndCategory {
             self.state = .finished
-            // Level End
-            scoreLabelNode.text = "Congratulations!"
+            // Finished!
             Actions(running: .sequentially) {
-                Scale(to: 1.5, duration: 0.1)
+                Fade(.out, duration: 0.1)
+                SKAction.run { [weak self] in
+                    self?.mainLabel.text = "Congratulations! 👍"
+                }
+                Actions(running: .parallelly) {
+                    Fade(.in, duration: 0.1)
+                    Scale(to: 1.5, duration: 0.1)
+                }
                 Scale(to: 1.0, duration: 0.1)
                 Scale(to: 1.5, duration: 0.1)
                 Scale(to: 1.0, duration: 0.1)
                 Wait(forDuration: 1)
-            }.run(on: scoreLabelNode) /*onComplete:*/ { [weak self] in
-                self?.finish(.success(true))
-            }
+                SKAction.run { [weak self] in
+                    self?.finish(.success(true))
+                }
+            }.run(on: mainLabel)
         } else {
             // Dead
             self.state = .waitingForRestart
