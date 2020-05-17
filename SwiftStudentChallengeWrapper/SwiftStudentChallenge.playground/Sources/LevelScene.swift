@@ -155,9 +155,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     // MARK: - Audio
-    let playScoreSoundEffect = PlaySound(fileName: "sfx_point.wav", waitForCompletion: false).skAction
     let playHitSoundEffect = PlaySound(fileName: "sfx_hit.wav", waitForCompletion: false).skAction
-    let playFlapSoundEffect = PlaySound(fileName: "sfx_wing.wav", waitForCompletion: false).skAction
     
     // MARK: - Touches
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -166,7 +164,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))
             }
-            playFlapSoundEffect.run(on: self)
         } else if self.state == .initialized || self.state == .waitingForRestart {
             self.startLevel()
         }
