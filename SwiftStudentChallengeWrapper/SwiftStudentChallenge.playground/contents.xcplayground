@@ -3,9 +3,9 @@
     <pages>
         <page name='Welcome'/>
         <page name='Basics'/>
-        <page name='Main'/>
-        <page name='Test'/>
         <page name='Action'/>
         <page name='Map'/>
+        <page name='Main'/>
+        <page name='Test'/>
     </pages>
 </playground>
