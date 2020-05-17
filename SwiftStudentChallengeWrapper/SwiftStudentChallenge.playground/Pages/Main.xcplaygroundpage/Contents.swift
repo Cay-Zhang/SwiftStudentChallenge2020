@@ -35,7 +35,7 @@ let game = Game {
         Missile(6)
         Pipes(15, pipeHeightScale: 2.0)
             .progressiveIntervals(from: 1.5, to: 0.5)
-            .pipeAction {
+            .customPipeActions { _ in
                 Actions(running: .sequentially) {
                     MoveBy(y: 100, duration: 2)
                     Wait(forRandomDurationIn: 0.3 ... 1.0)
@@ -47,8 +47,8 @@ let game = Game {
     Level(name: "Wiggle") {
         Pipes(5, constantInterval: 1)
         Pipes(10, constantInterval: 0.8)
-            .pipeGapHeight(150)
-            .pipeAction {
+            .customPipeGaps { _ in 150 }
+            .customPipeActions { _ in
                 Actions(running: .sequentially) {
                     Wiggle(y: 5, duration: 3)
                     Wait(forRandomDurationIn: 0.3 ... 1.0)

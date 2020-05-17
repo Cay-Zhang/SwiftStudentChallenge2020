@@ -13,13 +13,13 @@ public struct Pipes: MapComponent {
     let pipeScale: CGFloat
     let pipeHeightScale: CGFloat
     let pipeWidth: CGFloat
-    var verticalPipeGap: CGFloat
     let count: Int
     
-    var pipeAction: Action? = nil
+    var pipeActions: (_ pipeNumber: Int) -> Action? = { _ in nil }
     var intervals: (_ pipeNumber: Int) -> TimeInterval
+    var pipeGaps: (_ pipeNumber: Int) -> CGFloat
     
-    public init(_ count: Int, constantInterval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), verticalPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
+    public init(_ count: Int, constantInterval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), constantPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
         // Setting up textures
         self.topPipeTexture = SKTexture(image: topPipe)
         self.topPipeTexture.filteringMode = .nearest
@@ -34,10 +34,11 @@ public struct Pipes: MapComponent {
         self.pipeHeightScale = pipeHeightScale
         self.count = count
         self.intervals = { _ in constantInterval }
-        self.verticalPipeGap = verticalPipeGap
+        self.pipeGaps = { _ in constantPipeGap }
     }
     
-    func pipePair(in scene: LevelScene) -> SKNode {
+    func pipePair(in scene: LevelScene, pipeNumber: Int) -> SKNode {
+        let verticalPipeGap = pipeGaps(pipeNumber)
         let pipeGapCenterY = scene.groundHeight + CGFloat.random(in: scene.heightAboveGround * 0.5 ... scene.heightAboveGround * 0.7)
         
         let pipePair = SKNode()
@@ -71,25 +72,28 @@ public struct Pipes: MapComponent {
         return pipePair
     }
     
-    public func action(in scene: LevelScene) -> Action {
-        // Create the pipes movement actions along with the user-defined pipe action
+    public func spawnPipePairAction(in scene: LevelScene, pipeNumber: Int, pipeMovementAction: Action) -> Action {
         let pipeAction = Actions(running: .parallelly) {
-            MoveBy(x: -scene.size.width - pipeWidth, y: 0.0, duration: TimeInterval(0.005 * (scene.size.width + pipeWidth)))
-                .thenRemove()
-            self.pipeAction
+            pipeMovementAction
+            pipeActions(pipeNumber)
         }.skAction
         
-        // instant action to spawn the pipePair, attach the action, and move it
-        let spawnPipePair = SKAction.run { [self, weak scene, pipeAction] in
+        return SKAction.run { [self, weak scene, pipeAction, pipeNumber] in
             guard let scene = scene else { return }
-            let pipePair = self.pipePair(in: scene)
+            let pipePair = self.pipePair(in: scene, pipeNumber: pipeNumber)
             scene.levelContent.addChild(pipePair)
             pipePair.run(pipeAction)
         }
+    }
+    
+    public func action(in scene: LevelScene) -> Action {
+        // Create the pipes movement action
+        let pipeMovementAction = MoveBy(x: -scene.size.width - pipeWidth, y: 0.0, duration: TimeInterval(0.005 * (scene.size.width + pipeWidth))).thenRemove()
         
         let actions = (1...count).lazy
             .flatMap { (pipeNumber: Int) -> [Action] in
-                [spawnPipePair, Wait(forDuration: self.intervals(pipeNumber))]
+                [self.spawnPipePairAction(in: scene, pipeNumber: pipeNumber, pipeMovementAction: pipeMovementAction),
+                 Wait(forDuration: self.intervals(pipeNumber))]
             }
         return Actions(running: .sequentially, Array(actions))
     }
@@ -110,14 +114,22 @@ public extension Pipes {
         }
         return copy
     }
-    func pipeAction(_ buildAction: () -> Action) -> Self {
+    func customPipeActions(_ pipeActions: @escaping (_ pipeNumber: Int) -> Action) -> Self {
         var copy = self
-        copy.pipeAction = buildAction()
+        copy.pipeActions = pipeActions
         return copy
     }
-    func pipeGapHeight(_ verticalPipeGap: CGFloat) -> Self {
+    func customPipeGaps(_ pipeGaps: @escaping (_ pipeNumber: Int) -> CGFloat) -> Self {
         var copy = self
-        copy.verticalPipeGap = verticalPipeGap
+        copy.pipeGaps = pipeGaps
+        return copy
+    }
+    func progressivePipeGaps(from fromPipeGap: CGFloat, to toPipeGap: CGFloat) -> Self {
+        let step = (toPipeGap - fromPipeGap) / CGFloat(self.count - 1)
+        var copy = self
+        copy.pipeGaps = { [fromPipeGap, step] pipeNumber in
+            fromPipeGap + step * CGFloat(pipeNumber - 1)
+        }
         return copy
     }
 }
