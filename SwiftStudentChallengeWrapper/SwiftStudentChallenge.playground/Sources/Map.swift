@@ -16,10 +16,10 @@ public struct Pipes: MapComponent {
     let count: Int
     
     var pipeActions: (_ pipeNumber: Int) -> Action? = { _ in nil }
-    var intervals: (_ pipeNumber: Int) -> TimeInterval
+    public var intervals: (_ pipeNumber: Int) -> TimeInterval
     var pipeGaps: (_ pipeNumber: Int) -> CGFloat
     
-    public init(_ count: Int, constantInterval: TimeInterval = 1.0, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), constantPipeGap: CGFloat = 150, pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
+    public init(_ count: Int, constantInterval: TimeInterval = 1.0, constantPipeGap: CGFloat = 150, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
         // Setting up textures
         self.topPipeTexture = SKTexture(image: topPipe)
         self.topPipeTexture.filteringMode = .nearest
@@ -134,8 +134,8 @@ public extension Pipes {
     }
 }
 
-public struct Missile: MapComponent {
-    let texture = SKTexture(image: #imageLiteral(resourceName: "spr_missile.png"))
+public struct Missiles: MapComponent {
+    let texture = SKTexture(image: #imageLiteral(resourceName: "missile.png"))
     let count: Int
     let scale: CGFloat = 1.5
     
@@ -212,10 +212,10 @@ public struct GravityField: Field {
     public let strength: Float
     public var particleEffectsFileName: String?
     
-    public init(width: CGFloat, strength: Float) {
+    public init(width: CGFloat, strength: Float = 6) {
         self.width = width
         self.strength = strength
-        self.particleEffectsFileName = nil
+        self.particleEffectsFileName = "GravityField"
     }
     
     public var fieldNode: SKFieldNode {
@@ -228,10 +228,10 @@ public struct NoiseField: Field {
     public let strength: Float
     public var particleEffectsFileName: String?
     
-    public init(width: CGFloat, strength: Float) {
+    public init(width: CGFloat, strength: Float = 0.07) {
         self.width = width
         self.strength = strength
-        self.particleEffectsFileName = nil
+        self.particleEffectsFileName = "NoiseField"
     }
     
     public var fieldNode: SKFieldNode {

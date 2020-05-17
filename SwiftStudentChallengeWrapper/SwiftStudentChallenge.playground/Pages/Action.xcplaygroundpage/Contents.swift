@@ -66,7 +66,7 @@ game.runLevels()
  
  Now, you can try to implement some bird actions for yourself!
  
- For example, try moving the bird horizontally and observe the effect. You'll find a implementation of this on the last page.
+ * Experiment: Try moving the bird horizontally and observe the effect. You'll find a implementation of this on the last page.
  */
 
 //: [Next](@next)

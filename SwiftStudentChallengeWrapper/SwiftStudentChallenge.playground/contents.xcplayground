@@ -7,5 +7,6 @@
         <page name='Map'/>
         <page name='Main'/>
         <page name='Test'/>
+        <page name='Public Domain Images'/>
     </pages>
 </playground>
