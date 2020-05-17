@@ -44,8 +44,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         // setup background color
         self.backgroundColor = level.skyColor
         
-        setupGround()
-        
         setupSky()
         
         // setup bird
@@ -62,13 +60,12 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         let anim = SKAction.animate(with: [birdTexture1, birdTexture2, birdTexture3, birdTexture4], timePerFrame: 0.1)
         let flap = SKAction.repeatForever(anim)
         
-        bird = SKSpriteNode(texture: birdTexture1, size: CGSize(width: 34, height: 24).applying(.init(scaleX: 1.3, y: 1.3)))
+        bird = SKSpriteNode(texture: birdTexture1, size: CGSize(width: 34, height: 24).applying(.init(scaleX: 1.25, y: 1.25)))
         bird.setScale(1.0)
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
         bird.run(flap)
         
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
-//        print(bird.physicsBody?.mass)
         bird.physicsBody?.mass = 0.02
         bird.physicsBody?.isDynamic = true
         bird.physicsBody?.allowsRotation = false
@@ -131,37 +128,9 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     
     
     // MARK: - Ground
-    var groundTexture: SKTexture = {
-        let texture = SKTexture(image: #imageLiteral(resourceName: "land.png"))
-        texture.filteringMode = .nearest
-        return texture
-    }()
-    lazy var groundHeight: CGFloat = self.groundTexture.size().height * 2.0  // ground is scaled to 2x
+    lazy var ground: SKSpriteNode = self.childNode(withName: "ground") as! SKSpriteNode
+    lazy var groundHeight: CGFloat = self.ground.size.height
     lazy var heightAboveGround: CGFloat = self.size.height - self.groundHeight
-    
-    func setupGround() {
-        let moveGroundSpritesForever = Actions(running: .sequentially) {
-            MoveBy(x: -groundTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.02 * groundTexture.size().width * 2.0))
-            MoveBy(x: groundTexture.size().width * 2.0, y: 0, duration: 0.0)
-        }.repeatForever()
-        
-        for i in 0 ..< 2 + Int(self.frame.size.width / ( groundTexture.size().width * 2 )) {
-            let i = CGFloat(i)
-            let sprite = SKSpriteNode(texture: groundTexture)
-            sprite.setScale(2.0)
-            sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0)
-            sprite.run(moveGroundSpritesForever)
-            movingContent.addChild(sprite)
-        }
-        
-        // create the ground
-        let ground = SKNode()
-        ground.position = CGPoint(x: 0, y: groundTexture.size().height)
-        ground.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundTexture.size().height * 2.0))
-        ground.physicsBody?.isDynamic = false
-        ground.physicsBody?.categoryBitMask = fatalLevelContentCategory
-        self.addChild(ground)
-    }
     
     // MARK: - Sky
     func setupSky() {
