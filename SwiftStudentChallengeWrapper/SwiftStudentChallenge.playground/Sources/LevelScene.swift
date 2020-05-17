@@ -49,20 +49,27 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         setupSky()
         
         // setup bird
-        let birdTexture1 = SKTexture(image: #imageLiteral(resourceName: "bird-01.png"))
+        let birdTexture1 = SKTexture(image: #imageLiteral(resourceName: "bird1.png"))
         birdTexture1.filteringMode = .nearest
-        let birdTexture2 = SKTexture(image: #imageLiteral(resourceName: "bird-02.png"))
+        let birdTexture2 = SKTexture(image: #imageLiteral(resourceName: "bird2.png"))
         birdTexture2.filteringMode = .nearest
+        let birdTexture3 = SKTexture(image: #imageLiteral(resourceName: "bird3.png"))
+        birdTexture3.filteringMode = .nearest
+        let birdTexture4 = SKTexture(image: #imageLiteral(resourceName: "bird4.png"))
+        birdTexture4.filteringMode = .nearest
+
         
-        let anim = SKAction.animate(with: [birdTexture1, birdTexture2], timePerFrame: 0.2)
+        let anim = SKAction.animate(with: [birdTexture1, birdTexture2, birdTexture3, birdTexture4], timePerFrame: 0.1)
         let flap = SKAction.repeatForever(anim)
         
-        bird = SKSpriteNode(texture: birdTexture1)
+        bird = SKSpriteNode(texture: birdTexture1, size: CGSize(width: 34, height: 24).applying(.init(scaleX: 1.3, y: 1.3)))
         bird.setScale(1.0)
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
         bird.run(flap)
         
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
+//        print(bird.physicsBody?.mass)
+        bird.physicsBody?.mass = 0.02
         bird.physicsBody?.isDynamic = true
         bird.physicsBody?.allowsRotation = false
         bird.physicsBody?.categoryBitMask = birdCategory
