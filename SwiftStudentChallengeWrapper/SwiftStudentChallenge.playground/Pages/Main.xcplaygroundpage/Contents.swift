@@ -32,6 +32,7 @@ let game = Game {
         NoiseField(width: 1200, strength: 0.07)
             .applyingParticleEffects(fileNamed: "NoiseField")
         Wait(forDuration: 1)
+        Missile(6)
         Pipes(15, pipeHeightScale: 2.0)
             .progressiveIntervals(from: 1.5, to: 0.5)
             .pipeAction {

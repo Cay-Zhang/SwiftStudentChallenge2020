@@ -130,6 +130,41 @@ public extension Pipes {
     }
 }
 
+public struct Missile: MapComponent {
+    let texture = SKTexture(image: #imageLiteral(resourceName: "spr_missile.png"))
+    let count: Int
+    let scale: CGFloat = 1.5
+    
+    public init(_ count: Int) {
+        self.count = count
+    }
+    
+    public func action(in scene: LevelScene) -> Action {
+        let size = texture.size().applying(CGAffineTransform(scaleX: scale, y: scale))
+        
+        return Actions(running: .sequentially) {
+            SKAction.run { [weak scene, self, size] in
+                guard let scene = scene else { return }
+                let node = SKSpriteNode(texture: self.texture)
+                node.setScale(self.scale)
+                node.zRotation = CGFloat.pi
+                node.zPosition = 50
+                node.physicsBody = SKPhysicsBody(rectangleOf: size)
+                node.physicsBody?.isDynamic = false
+                node.physicsBody?.categoryBitMask = scene.fatalLevelContentCategory
+                node.physicsBody?.contactTestBitMask = scene.birdCategory
+                node.position.x = scene.size.width + size.width / 2.0
+                node.position.y = scene.groundHeight + CGFloat.random(in: 0.0 ... scene.heightAboveGround)
+                scene.addChild(node)
+                
+                let moveDistance = scene.size.width + size.width
+                MoveBy(x: -moveDistance, duration: Double(moveDistance) / 400.0).run(on: node)
+            }
+            Wait(forDuration: 0.1)
+        }.repeat(count)
+    }
+}
+
 public protocol Field: MapComponent {
     var width: CGFloat { get }
     var strength: Float { get }
