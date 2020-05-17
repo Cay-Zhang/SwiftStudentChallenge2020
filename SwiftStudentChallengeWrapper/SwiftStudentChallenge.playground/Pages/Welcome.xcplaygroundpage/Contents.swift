@@ -6,9 +6,14 @@
  */
 //: [Next](@next)
 /*:
- ### Table of Contents
+ ## Table of Contents
  
  1. [Basics](Basics)
- 2. [Actions](Creating)
- 3. [Adding Files](Adding%20Files)
+ 2. [Actions](Action)
+ 3. [Map](Map)
+ 
+ ## Credits for Public Domain Images
+ [missile.png](https://opengameart.org/content/missile-0) by **samoliver**\
+ [bird1-4.png](https://opengameart.org/content/bevouliin-free-game-character-yellow-flappy-bird) by **bevouliin.com**\
+ [sky.png](https://opengameart.org/content/gui-2) by **JanaChumi**, no change was made.
  */

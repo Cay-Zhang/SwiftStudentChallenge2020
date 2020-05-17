@@ -19,7 +19,7 @@ public struct Pipes: MapComponent {
     public var intervals: (_ pipeNumber: Int) -> TimeInterval
     var pipeGaps: (_ pipeNumber: Int) -> CGFloat
     
-    public init(_ count: Int, constantInterval: TimeInterval = 1.0, constantPipeGap: CGFloat = 150, topPipe: UIImage = #imageLiteral(resourceName: "PipeDown.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "PipeUp.png"), pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
+    public init(_ count: Int, constantInterval: TimeInterval = 1.0, constantPipeGap: CGFloat = 150, topPipe: UIImage = #imageLiteral(resourceName: "topPipe.png"), bottomPipe: UIImage = #imageLiteral(resourceName: "bottomPipe.png"), pipeScale: CGFloat = 2.0, pipeHeightScale: CGFloat = 2.0) {
         // Setting up textures
         self.topPipeTexture = SKTexture(image: topPipe)
         self.topPipeTexture.filteringMode = .nearest

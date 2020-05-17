@@ -20,4 +20,3 @@ let game = Game {
 game.runLevels()
 //: [Next](@next)
 
-//game = Game()

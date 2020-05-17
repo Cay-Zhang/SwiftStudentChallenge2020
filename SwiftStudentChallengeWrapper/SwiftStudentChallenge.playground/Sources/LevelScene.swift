@@ -135,20 +135,20 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     // MARK: - Sky
     func setupSky() {
         let skyTexture = SKTexture(image: #imageLiteral(resourceName: "sky.png"))
-
         skyTexture.filteringMode = .nearest
-
+        let skySize = skyTexture.size().applying(.init(scaleX: 1.072, y: 1.072))
+        
         let moveSkySpritesForever =
-            MoveBy(x: -skyTexture.size().width * 2.0, y: 0, duration: TimeInterval(0.1 * skyTexture.size().width * 2.0))
-                .then(MoveBy(x: skyTexture.size().width * 2.0, y: 0, duration: 0.0))
+            MoveBy(x: -skySize.width, y: 0, duration: Double(skySize.width) / 20.0)
+                .then(MoveBy(x: skySize.width, y: 0, duration: 0.0))
                 .repeatForever()
 
-        for i in 0 ..< 2 + Int(self.frame.size.width / ( skyTexture.size().width * 2 )) {
+        for i in 0 ..< 2 + Int(self.frame.size.width / (skySize.width)) {
             let i = CGFloat(i)
-            let sprite = SKSpriteNode(texture: skyTexture)
-            sprite.setScale(2.0)
+            let sprite = SKSpriteNode(texture: skyTexture, size: skySize)
+            sprite.anchorPoint = .init(x: 0, y: 0)
             sprite.zPosition = -20
-            sprite.position = CGPoint(x: i * sprite.size.width, y: sprite.size.height / 2.0 + skyTexture.size().height * 2.0) //
+            sprite.position = CGPoint(x: i * skySize.width, y: 0)
             sprite.run(moveSkySpritesForever)
             movingContent.addChild(sprite)
         }
