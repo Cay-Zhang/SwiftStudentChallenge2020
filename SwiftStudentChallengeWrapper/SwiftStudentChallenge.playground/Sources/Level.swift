@@ -17,7 +17,7 @@ public struct Level {
     }
     
     public var name = "Level"
-    public var skyColor: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
+    public var skyTint: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
     public var birdAction: Action? = nil
     public var mapComponents: [MapComponent]
     
@@ -47,8 +47,8 @@ public struct Level {
         modifying(\.birdAction, buildAction())
     }
     
-    public func skyColor(_ color: UIColor) -> Level {
-        modifying(\.skyColor, color)
+    public func skyTint(_ tint: UIColor) -> Level {
+        modifying(\.skyTint, tint)
     }
     
 }

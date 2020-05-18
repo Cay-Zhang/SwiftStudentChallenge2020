@@ -41,9 +41,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
         self.physicsWorld.contactDelegate = self
         
-        // setup background color
-        self.backgroundColor = level.skyColor
-        
         setupSky()
         
         // setup bird
@@ -135,21 +132,21 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     // MARK: - Sky
     func setupSky() {
         let skyTexture = SKTexture(image: #imageLiteral(resourceName: "sky.png"))
-        skyTexture.filteringMode = .nearest
         let skySize = skyTexture.size().applying(.init(scaleX: 1.072, y: 1.072))
         
-        let moveSkySpritesForever =
+        let action =
             MoveBy(x: -skySize.width, y: 0, duration: Double(skySize.width) / 20.0)
                 .then(MoveBy(x: skySize.width, y: 0, duration: 0.0))
                 .repeatForever()
 
-        for i in 0 ..< 2 + Int(self.frame.size.width / (skySize.width)) {
+        for i in 0 ..< 2 + Int(self.size.width / (skySize.width)) {
             let i = CGFloat(i)
-            let sprite = SKSpriteNode(texture: skyTexture, size: skySize)
+            let sprite = SKSpriteNode(texture: skyTexture, color: level.skyTint, size: skySize)
+            sprite.colorBlendFactor = 0.3
             sprite.anchorPoint = .init(x: 0, y: 0)
             sprite.zPosition = -20
             sprite.position = CGPoint(x: i * skySize.width, y: 0)
-            sprite.run(moveSkySpritesForever)
+            sprite.run(action)
             movingContent.addChild(sprite)
         }
     }
@@ -225,16 +222,10 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             Actions(running: .sequentially) {
                 playHitSoundEffect
                 Actions(running: .sequentially) {
-                    SKAction.run { [weak self] in
-                        self?.backgroundColor = SKColor(red: 1, green: 0, blue: 0, alpha: 1.0)
-                    }
-                    Wait(forDuration: 0.05)
-                    SKAction.run { [weak self, skyColor = self.level.skyColor] in
-                        self?.backgroundColor = skyColor
-                    }
-                    Wait(forDuration: 0.05)
+                    Colorize(#colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1), duration: 0.05, colorBlendFactor: 0.5)
+                    Decolorize(duration: 0.05)
                 }.repeat(4)
-            }.run(on: self, withKey: "flash")
+            }.run(on: bird, withKey: "flash")
         }
         
     }

@@ -23,6 +23,19 @@ let birdAction2 = Actions(running: .sequentially) {
 }.repeatForever()
 
 let game = Game {
+    Level(name: "Wiggle") {
+        Pipes(5, constantInterval: 1)
+        Pipes(10, constantInterval: 0.8)
+            .customPipeGaps { _ in 150 }
+            .customPipeActions { _ in
+                Actions(running: .sequentially) {
+                    Wiggle(y: 5, duration: 3)
+                    Wait(forRandomDurationIn: 0.3 ... 1.0)
+                    Wiggle(y: 10, duration: 3)
+                }
+            }
+    }.skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+    
     Level(name: "Hazy") {
         GravityField(width: 1200, strength: 6)
             .applyingParticleEffects(fileNamed: "GravityField")
@@ -42,25 +55,12 @@ let game = Game {
                     MoveBy(y: -100, duration: 2)
                 }
             }
-    }.birdAction(birdAction)
+    }.skyTint(#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1))
 
-    Level(name: "Wiggle") {
-        Pipes(5, constantInterval: 1)
-        Pipes(10, constantInterval: 0.8)
-            .customPipeGaps { _ in 150 }
-            .customPipeActions { _ in
-                Actions(running: .sequentially) {
-                    Wiggle(y: 5, duration: 3)
-                    Wait(forRandomDurationIn: 0.3 ... 1.0)
-                    Wiggle(y: 10, duration: 3)
-                }
-            }
-    }.skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
-    
     Level(name: "Wind") {
         Pipes(30, constantInterval: 1)
     }.birdAction(birdAction2)
-    .skyColor(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+    .skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
 }.showDebugStatistics()
 
 game.runLevels()
