@@ -58,6 +58,11 @@ NoiseField(width: 800, strength: 0.07)  // applies a randomized acceleration to 
     .applyingParticleEffects(fileNamed: "NoiseField")  // custom particle effect
 
 /*:
+ ## Missiles
+ A `Missiles` is a map component with a duration of 0 (instant) that launches a specific number of missiles randomly above the ground moving horizontally.
+ */
+Missiles(5)
+/*:
  Now that you know most of the customization points of this game, you can start to create your own crazy level!
  
  But before that, let's run the example code below and see what those customizations will look like in the actual game.
@@ -73,13 +78,14 @@ let game = Game {
                 Rotate(by: .degrees(.random(in: -60 ... 60)), duration: 4)
             }
     }
-    Level(name: "Fields") {
+    Level(name: "Fields and Missiles") {
         GravityField(width: 1200, strength: 6)
         Wait(forDuration: 1)
         Pipes(5)
         Wait(forDuration: 1)
         NoiseField(width: 1200, strength: 0.07)
         Wait(forDuration: 1)
+        Missiles(5)
         Pipes(10)
     }
 }
