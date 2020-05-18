@@ -2,7 +2,9 @@
 /*:
  In this playground, you'll create some crazy levels for the game **Floppy Bird**.
  
- You'll utilize a universal `Action` system and a time-based `MapComponent` system to realize your full creativity.
+ You'll utilize a universal **Action** system and a time-based **Map** system to realize your full creativity.
+ 
+ **For a quick experience, jump to the [Features Showcase](Features%20Showcase) page.**
  */
 //: [Next](@next)
 /*:

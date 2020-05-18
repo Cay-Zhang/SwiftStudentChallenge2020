@@ -1,14 +1,19 @@
 /*:
  # Features Showcase
+ Here are some levels that I designed to show the capability and convenience of the tools I developed.
+ 
+ Run all the code by clicking the **Execute Playground** button on the tool bar of the debug area. If you encounter a black screen, just rerun.
+ 
+ If you feel it's too hard, set `isCheatModeOn` to `true`, rerun, and you are invincible!
+ 
+ Rearrange/Comment out the levels the way you want to focus on specific levels. Observe the code and see how much you can understand without any documentation.
  */
 
-
-
-let isCheatModeOn = true
+let isCheatModeOn = false
 
 let game = Game {
     Level(name: "Progressive Value Change") {
-        Pipes(15)
+        Pipes(10)
             .progressivePipeGaps(from: 150, to: 100)
             .progressiveIntervals(from: 1.5, to: 0.75)
     }.cheat(isCheatModeOn)
@@ -30,8 +35,8 @@ let game = Game {
         Pipes(5)
             .customPipeActions { _ in
                 Actions(running: .sequentially) {
-                    Rotate(by: .degrees(.random(in: -60 ... 60)), duration: 2)
-                    Rotate(by: .degrees(.random(in: -60 ... 60)), duration: 2)
+                    Rotate(by: .degrees(.random(in: -40 ... 40)), duration: 2)
+                    Rotate(by: .degrees(.random(in: -40 ... 40)), duration: 2)
                 }
             }
     }.skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)).cheat(isCheatModeOn)
@@ -78,8 +83,6 @@ let game = Game {
         }.repeatForever()
     }.cheat(isCheatModeOn)
     
-    
-    
     Level(name: "Fields & Missiles") {
         GravityField(width: 1200, strength: 6)
         Wait(forDuration: 1)
@@ -91,7 +94,6 @@ let game = Game {
     }.cheat(isCheatModeOn)
     
     Level(name: "All of them!") {
-        
         Pipes(8)
             .progressivePipeGaps(from: 150, to: 100)
             .progressiveIntervals(from: 1.5, to: 0.75)
@@ -144,7 +146,11 @@ let game = Game {
             Decolorize(duration: 0.2)
         }.repeatForever()
     }.skyTint(#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)).cheat(isCheatModeOn)
-
 }
 
 game.runLevels()
+
+/*:
+ * Tips:
+ You have to rerun the page to restart all the levels after you've finished all of them.
+*/
