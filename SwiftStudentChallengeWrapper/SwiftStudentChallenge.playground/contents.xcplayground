@@ -6,6 +6,5 @@
         <page name='Action'/>
         <page name='Map'/>
         <page name='Features Showcase'/>
-        <page name='Test'/>
     </pages>
 </playground>

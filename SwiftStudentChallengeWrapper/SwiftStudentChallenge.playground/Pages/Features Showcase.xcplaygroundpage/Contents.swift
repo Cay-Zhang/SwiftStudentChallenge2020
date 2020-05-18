@@ -4,12 +4,12 @@
  
  Run all the code by clicking the **Execute Playground** button on the tool bar of the debug area. If you encounter a black screen, just rerun.
  
- If you feel it's too hard, set `isCheatModeOn` to `true`, rerun, and you are invincible!
+ **For demonstration purpose, `isCheatModeOn` is set to `true` and you are invincible!** Set it to false if you want to play it.
  
  Rearrange/Comment out the levels the way you want to focus on specific levels. Observe the code and see how much you can understand without any documentation.
  */
 
-let isCheatModeOn = false
+let isCheatModeOn = true
 
 let game = Game {
     Level(name: "Progressive Value Change") {
@@ -43,7 +43,7 @@ let game = Game {
     
     Level(name: "Bird Action: Wind") {
         Pipes(15)
-            .progressivePipeGaps(from: 150, to: 100)
+            .progressivePipeGaps(from: 175, to: 125)
             .progressiveIntervals(from: 1.5, to: 0.75)
     }.birdAction {
         Actions(running: .sequentially) {

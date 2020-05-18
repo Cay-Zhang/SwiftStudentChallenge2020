@@ -1,6 +1,6 @@
 //: # Home
 /*:
- In this playground, you'll create some crazy levels for the game **Floppy Bird**.
+ In this playground, you'll create some crazy levels for the game **Crazy Bird**, where you control a bird to avoid obstacles and arrive at the destination.
  
  You'll utilize a universal **Action** system and a time-based **Map** system to realize your full creativity.
  

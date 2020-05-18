@@ -1,7 +1,7 @@
 //: [Previous](@previous)
 //: # Basics
 /*:
- **Floppy Bird** is a game where you control a bird to avoid obstacles and arrive at the destination.
+ **Crazy Bird** is a game where you control a bird to avoid obstacles and arrive at the destination.
  
  In fact, the game itself doesn't require much explanation. All you do is tapping/clicking the screen to make the bird flap.
  
