@@ -9,8 +9,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     var level: Level!
     
     var bird: SKSpriteNode!
-    
-    var movePipesAndRemove: Action!
  
     let birdCategory: UInt32 = 1 << 0
     let boundaryCategory: UInt32 = 1 << 1
@@ -54,13 +52,11 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         birdTexture4.filteringMode = .nearest
 
         
-        let anim = SKAction.animate(with: [birdTexture1, birdTexture2, birdTexture3, birdTexture4], timePerFrame: 0.1)
-        let flap = SKAction.repeatForever(anim)
+        let textureAnimation = SKAction.animate(with: [birdTexture1, birdTexture2, birdTexture3, birdTexture4], timePerFrame: 0.1).repeatForever().skAction
         
         bird = SKSpriteNode(texture: birdTexture1, size: CGSize(width: 34, height: 24).applying(.init(scaleX: 1.25, y: 1.25)))
-        bird.setScale(1.0)
         bird.position = CGPoint(x: self.frame.size.width * 0.35, y: self.frame.size.height * 0.6)
-        bird.run(flap)
+        bird.run(textureAnimation)
         
         bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2.0)
         bird.physicsBody?.mass = 0.02
@@ -78,7 +74,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         mainLabel.run(showAndHideMainLabel, withKey: showAndHideMainLabelActionKey)
         
         self.state = .initialized
-        
     }
     
     /// Start/Restart the level.
@@ -154,7 +149,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     // MARK: - Audio
     let playHitSoundEffect = PlaySound(fileName: "sfx_hit.wav", waitForCompletion: false).skAction
     
-    // MARK: - Touches
+    // MARK: - Touches, Updates & Contacts
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if case .playing = self.state {
             for _ in touches {
@@ -168,9 +163,9 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     }
     
     public override func update(_ currentTime: TimeInterval) {
-        /* Called before each frame is rendered */
-        let value = bird.physicsBody!.velocity.dy * ( bird.physicsBody!.velocity.dy < 0 ? 0.003 : 0.001 )
-        bird.zRotation = min( max(-1, value), 0.5 )
+        if let v_y = bird.physicsBody?.velocity.dy {
+            bird.zRotation = min(max(-1.0, v_y * (v_y < 0 ? 0.003 : 0.001)), 0.5)
+        }
     }
     
     public func didBegin(_ contact: SKPhysicsContact) {
@@ -218,7 +213,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
                 }
             }
             
-            // Flash background if contact is detected
+            // Flash background
             Actions(running: .sequentially) {
                 playHitSoundEffect
                 Actions(running: .sequentially) {
@@ -228,16 +223,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             }.run(on: bird, withKey: "flash")
         }
         
-    }
-    
-    public override func willMove(from view: SKView) {
-        super.willMove(from: view)
-        // uncomment to debug memory issues
-//        for child in children {
-//            child.removeAllActions()
-//            child.removeFromParent()
-//        }
-//        self.removeAllActions()
     }
     
     // MARK: - Main Label
@@ -270,11 +255,6 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
             Wait(forDuration: 2)
             Fade(.out, duration: 0.7)
         }.run(on: mainLabel)
-    }
-    
-    deinit {
-        // Uncomment to debug
-        // print("LevelScene: deinit")
     }
     
     

@@ -72,7 +72,7 @@ public extension Game {
 //            .print()
             .sink { [levels, weak levelSubject, weak cancelBag, weak _sceneView] value in
                 guard let levelSubject = levelSubject, let cancelBag = cancelBag, let sceneView = _sceneView else { return }
-                let (index, result) = value
+                let (index, _) = value
                 if (index + 1) < levels.endIndex {
                     levels[index + 1]
                         .run(in: sceneView)
