@@ -20,6 +20,7 @@ public struct Level {
     public var skyTint: UIColor = #colorLiteral(red: 0.3176470588, green: 0.7529411765, blue: 0.7882352941, alpha: 1)
     public var birdAction: Action? = nil
     public var mapComponents: [MapComponent]
+    public var isCheatModeOn: Bool = false
     
     public func run(in view: SKView) -> Future<Level.Result, Never> {
         Future { [self] promise in
@@ -49,6 +50,10 @@ public struct Level {
     
     public func skyTint(_ tint: UIColor) -> Level {
         modifying(\.skyTint, tint)
+    }
+    
+    public func cheat(_ isCheatModeOn: Bool = true) -> Level {
+        modifying(\.isCheatModeOn, isCheatModeOn)
     }
     
 }

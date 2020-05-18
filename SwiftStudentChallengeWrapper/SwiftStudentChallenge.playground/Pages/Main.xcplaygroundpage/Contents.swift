@@ -1,4 +1,7 @@
 //#-editable-code
+
+let isCheatModeOn = true
+
 let birdAction = Actions(running: .sequentially) {
     Fade(.out, duration: 0.1)
     Wait(forDuration: 0.1)
@@ -34,7 +37,7 @@ let game = Game {
                     Wiggle(y: 10, duration: 3)
                 }
             }
-    }.skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+        }.skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)).cheat(isCheatModeOn)
     
     Level(name: "Hazy") {
         GravityField(width: 1200, strength: 6)
@@ -55,12 +58,12 @@ let game = Game {
                     MoveBy(y: -100, duration: 2)
                 }
             }
-    }.skyTint(#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1))
+        }.skyTint(#colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)).cheat(isCheatModeOn)
 
     Level(name: "Wind") {
         Pipes(30, constantInterval: 1)
     }.birdAction(birdAction2)
-    .skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
+        .skyTint(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)).cheat(isCheatModeOn)
 }.showDebugStatistics()
 
 game.runLevels()

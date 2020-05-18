@@ -63,7 +63,7 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
         bird.physicsBody?.isDynamic = true
         bird.physicsBody?.allowsRotation = false
         bird.physicsBody?.categoryBitMask = birdCategory
-        bird.physicsBody?.contactTestBitMask = fatalLevelContentCategory
+        bird.physicsBody?.contactTestBitMask = level.isCheatModeOn ? 0 : fatalLevelContentCategory
         bird.physicsBody?.fieldBitMask = fieldCategory
         
         self.addChild(bird)

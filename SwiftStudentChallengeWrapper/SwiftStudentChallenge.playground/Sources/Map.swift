@@ -54,7 +54,7 @@ public struct Pipes: MapComponent {
         topPipe.physicsBody = SKPhysicsBody(rectangleOf: topPipe.size)
         topPipe.physicsBody?.isDynamic = false
         topPipe.physicsBody?.categoryBitMask = scene.fatalLevelContentCategory
-        topPipe.physicsBody?.contactTestBitMask = scene.birdCategory
+//        topPipe.physicsBody?.contactTestBitMask = scene.birdCategory
         pipePair.addChild(topPipe)
         
         let bottomPipe = SKSpriteNode(texture: bottomPipeTexture)
@@ -66,7 +66,7 @@ public struct Pipes: MapComponent {
         bottomPipe.physicsBody = SKPhysicsBody(rectangleOf: bottomPipe.size)
         bottomPipe.physicsBody?.isDynamic = false
         bottomPipe.physicsBody?.categoryBitMask = scene.fatalLevelContentCategory
-        bottomPipe.physicsBody?.contactTestBitMask = scene.birdCategory
+//        bottomPipe.physicsBody?.contactTestBitMask = scene.birdCategory
         pipePair.addChild(bottomPipe)
         
         return pipePair
@@ -156,7 +156,7 @@ public struct Missiles: MapComponent {
                 node.physicsBody = SKPhysicsBody(rectangleOf: size)
                 node.physicsBody?.isDynamic = false
                 node.physicsBody?.categoryBitMask = scene.fatalLevelContentCategory
-                node.physicsBody?.contactTestBitMask = scene.birdCategory
+//                node.physicsBody?.contactTestBitMask = scene.birdCategory
                 node.position.x = scene.size.width + size.width / 2.0
                 node.position.y = scene.groundHeight + CGFloat.random(in: 0.0 ... scene.heightAboveGround)
                 scene.addChild(node)
