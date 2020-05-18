@@ -152,6 +152,11 @@ public class LevelScene: SKScene, SKPhysicsContactDelegate{
     // MARK: - Touches, Updates & Contacts
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if case .playing = self.state {
+            // reset bird position if it's outside the scene's frame
+            if !self.frame.contains(bird.position) {
+                bird.position = CGPoint(x: size.width * 0.35, y: size.height * 0.6)
+                Fade(.out, duration: 0.1).then(Fade(.in, duration: 0.1)).repeat(3).run(on: bird)
+            }
             for _ in touches {
                 bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 7))

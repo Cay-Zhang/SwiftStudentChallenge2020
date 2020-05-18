@@ -137,7 +137,7 @@ public extension Pipes {
 public struct Missiles: MapComponent {
     let texture = SKTexture(image: #imageLiteral(resourceName: "missile.png"))
     let count: Int
-    let scale: CGFloat = 1.5
+    let scale: CGFloat = 1.3
     
     public init(_ count: Int) {
         self.count = count

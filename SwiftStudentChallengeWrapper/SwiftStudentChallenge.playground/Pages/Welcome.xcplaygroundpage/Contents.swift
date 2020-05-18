@@ -11,6 +11,7 @@
  1. [Basics](Basics)
  2. [Actions](Action)
  3. [Map](Map)
+ 4. [Features Showcase](Features%20Showcase)
  
  ## Credits for Public Domain Images/Audios
  [missile.png](https://opengameart.org/content/missile-0) by **samoliver**.\
